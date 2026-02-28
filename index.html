@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pita Limjaroenrat - Curriculum Vitae</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-main: #0a0a0a;
+            --bg-secondary: #161616;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --accent-primary: #F26522;
+            /* Progress/Orange */
+            --accent-secondary: #ff8547;
+            --text-primary: #f5f5f5;
+            --text-secondary: #a3a3a3;
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .cv-wrapper {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- Header Section --- */
+        .header {
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(242, 101, 34, 0.15) 0%, rgba(10, 10, 10, 1) 100%);
+            border-bottom: 2px solid var(--accent-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 250px;
+            background: radial-gradient(circle at 80% 0%, rgba(242, 101, 34, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .name-title h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #fff, #a3a3a3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .name-title h2 {
+            font-size: 1.5rem;
+            color: var(--accent-primary);
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .contact-info {
+            position: relative;
+            z-index: 1;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .contact-item:hover {
+            color: var(--accent-primary);
+        }
+
+        .contact-item i {
+            color: var(--accent-primary);
+        }
+
+        /* --- Main Content Layout --- */
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #fff;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .section-title::after {
+            content: '';
+            height: 1px;
+            flex-grow: 1;
+            background: linear-gradient(90deg, var(--border-color) 0%, transparent 100%);
+        }
+
+        .section-title i {
+            color: var(--accent-primary);
+        }
+
+        /* --- Timeline (Experience / Education) --- */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-bottom: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 7px;
+            top: 5px;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--border-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 35px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -30px;
+            top: 6px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: var(--bg-secondary);
+            border: 2px solid var(--accent-primary);
+            box-shadow: 0 0 10px rgba(242, 101, 34, 0.4);
+        }
+
+        .timeline-date {
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: var(--accent-primary);
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+            display: inline-block;
+        }
+
+        .timeline-title {
+            font-size: 1.25rem;
+            color: #fff;
+            margin-bottom: 4px;
+        }
+
+        .timeline-subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .timeline-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .timeline-desc ul {
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+
+        .timeline-desc li {
+            margin-bottom: 6px;
+        }
+
+        /* --- Sidebar (Frameworks & Skills) --- */
+        .sidebar {
+            background-color: var(--bg-main);
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar-section {
+            margin-bottom: 40px;
+        }
+
+        .sidebar-title {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .framework-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .framework-card {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-primary);
+            transition: transform 0.2s;
+        }
+
+        .framework-card:hover {
+            transform: translateX(5px);
+            background: rgba(242, 101, 34, 0.05);
+        }
+
+        .framework-card h4 {
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .framework-card p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* --- Print Styles --- */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+
+            .cv-wrapper {
+                box-shadow: none;
+                border: none;
+                background: white;
+            }
+
+            .header {
+                background: white;
+                border-bottom: 2px solid #000;
+                padding: 30px 20px;
+            }
+
+            .name-title h1 {
+                background: none;
+                -webkit-text-fill-color: black;
+            }
+
+            .name-title h2,
+            .timeline-date,
+            .contact-item i,
+            .section-title i {
+                color: #555;
+            }
+
+            .text-primary,
+            h1,
+            h2,
+            h3,
+            h4,
+            .section-title,
+            .timeline-title {
+                color: black;
+            }
+
+            .text-secondary,
+            .timeline-subtitle,
+            .timeline-desc,
+            .contact-item {
+                color: #333;
+            }
+
+            .sidebar {
+                background: white;
+                border: 1px solid #ccc;
+            }
+
+            .framework-card {
+                background: white;
+                border: 1px solid #eee;
+                border-left: 3px solid #555;
+            }
+
+            .badge {
+                border-color: #999;
+                color: black;
+            }
+
+            .container {
+                padding: 0;
+            }
+
+            .main-content {
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .header-bg {
+                display: none;
+            }
+        }
+
+        /* --- Responsive --- */
+        @media screen and (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+
+            .contact-info {
+                text-align: center;
+                align-items: center;
+            }
+
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header-bg"></div>
+    <div class="container">
+        <div class="cv-wrapper">
+
+            <header class="header">
+                <div class="header-content name-title">
+                    <h1>Pita Limjaroenrat</h1>
+                    <h2>Progressive Leader & Tech Executive</h2>
+                </div>
+                <div class="contact-info">
+                    <a href="mailto:pita@example.com" class="contact-item">
+                        <i class="fas fa-envelope"></i> pita@example.com
+                    </a>
+                    <a href="#" class="contact-item">
+                        <i class="fas fa-globe"></i> Bangkok, Thailand
+                    </a>
+                    <div class="contact-item">
+                        <i class="fab fa-linkedin"></i> linkedin.com/in/pita
+                    </div>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <div class="left-col">
+
+                    <section class="section">
+                        <h3 class="section-title"><i class="fas fa-briefcase"></i> Professional Experience</h3>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <span class="timeline-date">2020 - Present</span>
+                                <h4 class="timeline-title">Progressive Political Leader</h4>
+                                <div class="timeline-subtitle">Move Forward Party & People's Party</div>
+                                <div class="timeline-desc">
+                                    <ul>
+                                        <li>Led the Move Forward Party to a historic electoral victory in 2023, securing
+                                            151 seats to become the largest party in the parliament.</li>
+                                        <li>Advocated for structural reforms, demonopolization (de-monopoly),
+                                            decentralization, and modernization of the state.</li>
+                                        <li>Served as a leading Member of Parliament, championing the "Lost Decade"
+                                            ideology to revitalize Thai democracy.</li>
+                                        <li>Transitioned to a global stage as a Visiting Senior Fellow at Harvard
+                                            University, addressing international forums on democracy.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <span class="timeline-date">2017 - 2018</span>
+                                <h4 class="timeline-title">Executive Director</h4>
+                                <div class="timeline-subtitle">Grab Thailand</div>
+                                <div class="timeline-desc">
+                                    <ul>
+                                        <li>Steered the strategic direction of Southeast Asia's decacorn tech startup in
+                                            Thailand.</li>
+                                        <li>Integrated regional logistics, ride-hailing, and fintech with deep
+                                            understanding of local grassroots supply chains.</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="timeline-item">
+                                <span class="timeline-date">2005 - 2007 (approx.)</span>
+                                <h4 class="timeline-title">Managing Director</h4>
+                                <div class="timeline-subtitle">CEO Agrifood</div>
+                                <div class="timeline-desc">
+                                    <ul>
+                                        <li>Successfully executed a corporate turnaround, restructuring massive debt
+                                            inherited during a family crisis.</li>
+                                        <li>Revamped the agricultural supply chain, transforming the company into one of
+                                            Asia's largest rice bran oil producers.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section">
+                        <h3 class="section-title"><i class="fas fa-graduation-cap"></i> Education</h3>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <span class="timeline-date">Graduated 2011</span>
+                                <h4 class="timeline-title">Master in Public Administration (MPA)</h4>
+                                <div class="timeline-subtitle">Harvard University - John F. Kennedy School of Government
+                                </div>
+                                <div class="timeline-desc">First Thai student to receive a scholarship. Focused on
+                                    public policy and state administration.</div>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-date">Graduated 2011</span>
+                                <h4 class="timeline-title">Master in Business Administration (MBA)</h4>
+                                <div class="timeline-subtitle">Massachusetts Institute of Technology (MIT) - Sloan
+                                    School of Management</div>
+                                <div class="timeline-desc">Focused on enterprise management and analytical finance.
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <span class="timeline-date">Undergraduate</span>
+                                <h4 class="timeline-title">Bachelor of Business Administration (Finance)</h4>
+                                <div class="timeline-subtitle">Thammasat University</div>
+                                <div class="timeline-desc">Graduated with First-Class Honors (English Program).</div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <div class="right-col">
+                    <div class="sidebar">
+
+                        <div class="sidebar-section">
+                            <h3 class="sidebar-title">Key Ideologies</h3>
+                            <div class="framework-cards">
+                                <div class="framework-card">
+                                    <h4>The 5-Button Theory</h4>
+                                    <p>A structural model for agricultural reform focusing on Land (1), Debt (2), Cost
+                                        (3), Innovation (4), and Agro-tourism (5).</p>
+                                </div>
+                                <div class="framework-card">
+                                    <h4>De-monopolization</h4>
+                                    <p>Combating corporate monopolies to create a fair, competitive economic landscape.
+                                    </p>
+                                </div>
+                                <div class="framework-card">
+                                    <h4>Decentralization</h4>
+                                    <p>Distributing governmental power and budget to local levels to reduce inequality.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="sidebar-section">
+                            <h3 class="sidebar-title">Core Competencies</h3>
+                            <div class="badges">
+                                <span class="badge">Macroeconomics</span>
+                                <span class="badge">Public Policy</span>
+                                <span class="badge">Tech Startups</span>
+                                <span class="badge">Corporate Finance</span>
+                                <span class="badge">Agri-tech</span>
+                                <span class="badge">Supply Chain</span>
+                                <span class="badge">Political Strategy</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+
+            <footer class="footer">
+                <p>Designed for the Progressive Era • Version 2</p>
+            </footer>
+
+        </div>
+    </div>
+</body>
+
+</html>
