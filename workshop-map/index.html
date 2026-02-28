@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Travel Map: Chiang Mai - Phitsanulok</title>
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Prompt:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #f97316;
+            /* Orange accent */
+            --accent-hover: #ea580c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Prompt', 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Header Layout */
+        header {
+            background-color: var(--panel-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .oracle-badge {
+            font-size: 0.8rem;
+            background-color: rgba(249, 115, 22, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(249, 115, 22, 0.3);
+            font-weight: 500;
+        }
+
+        /* Main Workspace */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        /* Map Area */
+        #map {
+            width: 100%;
+            height: 100%;
+            background-color: #0f172a;
+            /* Fallback before tiles load */
+        }
+
+        /* Custom Leaflet Popup for Dark Theme */
+        .leaflet-popup-content-wrapper {
+            background: rgba(30, 41, 59, 0.95);
+            color: #f8fafc;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+            border: 1px solid #475569;
+            backdrop-filter: blur(4px);
+        }
+
+        .leaflet-popup-tip {
+            background: rgba(30, 41, 59, 0.95);
+            border-bottom: 1px solid #475569;
+            border-right: 1px solid #475569;
+        }
+
+        .popup-header {
+            font-family: 'Prompt', sans-serif;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: var(--accent);
+            border-bottom: 1px solid #334155;
+            padding-bottom: 4px;
+        }
+
+        .popup-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+            font-size: 0.85rem;
+        }
+
+        .popup-label {
+            color: var(--text-muted);
+            margin-right: 12px;
+        }
+
+        .popup-value {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .battery-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .battery-icon {
+            width: 16px;
+            height: 8px;
+            border: 1px solid #cbd5e1;
+            border-radius: 2px;
+            position: relative;
+        }
+
+        .battery-icon::after {
+            content: '';
+            position: absolute;
+            right: -3px;
+            top: 1px;
+            height: 4px;
+            width: 2px;
+            background: #cbd5e1;
+            border-radius: 0 1px 1px 0;
+        }
+
+        .battery-level {
+            height: 100%;
+            background: #22c55e;
+            border-radius: 1px;
+        }
+
+        /* Toggler for Mobile */
+        .toggle-panel {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>🗺️ Chiang Mai — Phitsanulok</h1>
+        <div class="oracle-badge">Powered by SEFER Oracle</div>
+    </header>
+
+    <div class="workspace">
+        <!-- The Map -->
+        <div id="map"></div>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <!-- PapaParse JS library for elegant CSV Parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <script>
+        // 1. Initialize Map
+        const map = L.map('map').setView([18.7883, 98.9853], 6); // Default to Chiang Mai area
+
+        // Set Dark Theme Tiles (CartoDB Dark Matter)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        let pathLayer = null;
+        let markerGroup = L.layerGroup().addTo(map);
+
+        // 2. Parse and Render Function automatically on load
+        function renderMap() {
+            // Using PapaParse to handle fetching and parsing cleanly
+            Papa.parse("travel-cnx-phs.csv", {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                dynamicTyping: true, // Automatically converts numbers
+                complete: function (results) {
+                    const data = results.data;
+
+                    if (data.length === 0) {
+                        alert("The file was empty or could not be mapped.");
+                        return;
+                    }
+
+                    plotData(data);
+                },
+                error: function (err) {
+                    alert("เกิดข้อผิดพลาดในการโหลด CSV: " + err.message + "\nให้แน่ใจว่าเปิดไฟล์ผ่าน Local Server (เช่น Live Server) ไม่ใช่ File Protocol.");
+                }
+            });
+        }
+
+        // Initialize fetching immediately
+        renderMap();
+
+        // 3. Logic to Draw Markers and Paths
+        function plotData(rows) {
+            // Clear existing layers
+            if (pathLayer) map.removeLayer(pathLayer);
+            markerGroup.clearLayers();
+
+            const latlngs = [];
+            let validPoints = 0;
+
+            // Sort data chronologically if 'updated' exists (reverse the array if it is newest-first)
+            // Assuming data might be ordered, we just read them.
+            // If you know data is newest-first, you can call rows.reverse() here.
+
+            rows.forEach((row, index) => {
+                // Ensure we have coordinates
+                if (row.lat !== undefined && row.lon !== undefined && row.lat !== null) {
+                    const point = [row.lat, row.lon];
+                    latlngs.push(point);
+                    validPoints++;
+
+                    // Determine Battery Color based on percentage
+                    let battColor = '#22c55e'; // Green
+                    if (row.battery <= 20) battColor = '#ef4444'; // Red
+                    else if (row.battery <= 50) battColor = '#eab308'; // Yellow
+
+                    // Format Time neatly (remove T and Z if it's ISO string)
+                    let timeStr = row.updated ? String(row.updated).replace('T', ' ').replace('Z', '') : 'Unknown Time';
+
+                    // Create Popup HTML
+                    const popupHTML = `
+                        <div class="popup-header">
+                            ${row.place || row.locality || 'Unknown Location'}
+                        </div>
+                        <div class="popup-row">
+                            <span class="popup-label">🕒 เวลา:</span>
+                            <span class="popup-value">${timeStr}</span>
+                        </div>
+                        <div class="popup-row">
+                            <span class="popup-label">🔋 แบตเตอรี่:</span>
+                            <span class="popup-value battery-indicator">
+                                <div class="battery-icon">
+                                    <div class="battery-level" style="width: ${row.battery || 0}%; background: ${battColor};"></div>
+                                </div>
+                                ${row.battery ? row.battery + '%' : 'N/A'} ${row.charging === true || row.charging === 'true' ? '⚡' : ''}
+                            </span>
+                        </div>
+                    `;
+
+                    // Create Circle Marker
+                    const marker = L.circleMarker(point, {
+                        radius: 6,
+                        fillColor: "var(--accent)",
+                        color: "#fff",
+                        weight: 1.5,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    });
+
+                    // Add hover popups or click popups
+                    marker.bindPopup(popupHTML);
+                    markerGroup.addLayer(marker);
+                }
+            });
+
+            if (validPoints > 0) {
+                // Draw connecting path
+                pathLayer = L.polyline(latlngs, {
+                    color: 'rgba(249, 115, 22, 0.6)',
+                    weight: 3,
+                    dashArray: '5, 8' // Make line dotted/dashed to look cool
+                }).addTo(map);
+
+                // Auto zoom and pan to fit all points
+                map.fitBounds(pathLayer.getBounds(), {
+                    padding: [50, 50]
+                });
+            } else {
+                alert("ไม่พบค่าพิกัด lat, lon ที่ถูกต้องในไฟล์ CSV นี้ครับ");
+            }
+        }
+    </script>
+</body>
+
+</html>

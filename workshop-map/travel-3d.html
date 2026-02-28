@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Train Dashcam: Chiang Mai - Phitsanulok</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Prompt:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #0b1120;
+            font-family: 'Prompt', 'Inter', sans-serif;
+            color: white;
+        }
+
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+        }
+
+        /* Dashcam UI Overlay */
+        #hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            pointer-events: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 10;
+        }
+
+        .hud-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            min-width: 250px;
+        }
+
+        .hud-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #0ea5e9;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .hud-value {
+            font-size: 1.5rem;
+            font-weight: 500;
+            line-height: 1.2;
+            word-wrap: break-word;
+        }
+
+        .hud-sub {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .battery-bar-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            margin-top: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #battery-fill {
+            height: 100%;
+            width: 100%;
+            background: #22c55e;
+            border-radius: 6px;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0f172a;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.5s ease;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(14, 165, 233, 0.3);
+            border-top-color: #0ea5e9;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Controls Tip */
+        #controls-tip {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+            letter-spacing: 1px;
+        }
+
+        .oracle-badge {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            background-color: rgba(14, 165, 233, 0.15);
+            color: #0ea5e9;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(14, 165, 233, 0.3);
+            pointer-events: none;
+        }
+
+        /* Camera Controls */
+        #cam-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .cam-btn {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(14, 165, 233, 0.4);
+            color: #94a3b8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Prompt', sans-serif;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cam-btn:hover {
+            background: rgba(14, 165, 233, 0.2);
+            color: white;
+        }
+
+        .cam-btn.active {
+            background: rgba(14, 165, 233, 0.5);
+            color: white;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <div style="margin-top: 20px; color: #94a3b8; font-family: monospace;">INITIALIZING QUANTUM CORE...</div>
+    </div>
+
+    <!-- UI Overlay -->
+    <div id="hud">
+        <div class="hud-panel">
+            <div class="hud-title">ตำแหน่งปัจจุบัน</div>
+            <div id="hud-place" class="hud-value">กำลังวิเคราะห์...</div>
+            <div id="hud-time" class="hud-sub">--:--:--</div>
+        </div>
+        <div class="hud-panel" style="text-align: right; min-width: 200px;">
+            <div class="hud-title">ระดับพลังงาน</div>
+            <div class="hud-value"><span id="hud-batt-text">--</span>% <span id="hud-charging"
+                    style="color: #eab308; display: none;">⚡</span></div>
+            <div class="battery-bar-container">
+                <div id="battery-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="controls-tip">คลิกและลากเมาส์เพื่อหมุนมุมกล้อง | POWERED BY SEFER ORACLE</div>
+    <div class="oracle-badge">SEFER Oracle 3D Edition</div>
+
+    <!-- Camera Controls -->
+    <div id="cam-controls">
+        <button class="cam-btn active" onclick="setCameraMode('dashcam')">🎥 หน้ารถไฟ (Dashcam)</button>
+        <button class="cam-btn" onclick="setCameraMode('chase')">🚁 มุมมองบุคคลที่ 3 (Chase)</button>
+        <button class="cam-btn" onclick="setCameraMode('far')">🛰️ มุมกว้าง (Far View)</button>
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+    <script>
+        // === GLOBAL SETUP ===
+        let scene, camera, renderer, controls;
+        let pathCurve, lineObject, trainMesh;
+        let trainCars = []; // Array to hold multiple train cars
+        let pathLength = 1000;
+        let trainData = []; // Store interpolated data nodes
+
+        let pathProgress = 0; // 0 to 1
+        let animationSpeed = 0.0002; // Speed multiplier (slower and smoother)
+        let isAnimating = false;
+
+        let currentCamMode = 'dashcam'; // 'dashcam', 'chase', 'far'
+
+        // Origin normalization (so coordinates start near 0,0,0)
+        let latOffset = 0;
+        let lonOffset = 0;
+        const scaleFactor = 1500; // Multiplier to make distances visible
+
+        init();
+
+        function init() {
+            const container = document.getElementById('canvas-container');
+
+            // 1. SCENE
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x0b1120, 0.008);
+
+            // 2. CAMERA (Main)
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+
+            // 3. RENDERER
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            container.appendChild(renderer.domElement);
+
+            // 4. LIGHTS
+            const ambient = new THREE.AmbientLight(0x222222);
+            scene.add(ambient);
+
+            const dirLight = new THREE.DirectionalLight(0xaaaaaa, 1);
+            dirLight.position.set(50, 200, 100);
+            scene.add(dirLight);
+
+            // 5. ENVIRONMENT (TRON-STYLE GRID)
+            const gridHelper = new THREE.GridHelper(1000, 100, 0x1e293b, 0x090d15);
+            gridHelper.position.y = -2;
+            scene.add(gridHelper);
+
+            // Add glowing particles for ambient atmosphere
+            const particleGeo = new THREE.BufferGeometry();
+            const pCount = 2000;
+            const posArray = new Float32Array(pCount * 3);
+            for (let i = 0; i < pCount * 3; i++) {
+                posArray[i] = (Math.random() - 0.5) * 600;
+            }
+            particleGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            const particleMat = new THREE.PointsMaterial({ size: 0.5, color: 0x38bdf8, transparent: true, opacity: 0.5 });
+            const pMesh = new THREE.Points(particleGeo, particleMat);
+            pMesh.position.y = 10;
+            scene.add(pMesh);
+
+            // 6. LOAD CSV DATA
+            Papa.parse("travel-cnx-phs.csv", {
+                download: true,
+                header: true,
+                dynamicTyping: true,
+                skipEmptyLines: true,
+                complete: function (results) {
+                    processData(results.data);
+                },
+                error: function (err) {
+                    alert("Error loading CSV: " + err.message);
+                }
+            });
+
+            // 7. CONTROLS (Allow looking around from train)
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.enableZoom = false; // Keep camera fixed on train
+            controls.enablePan = false;
+
+            // Resize handle
+            window.addEventListener('resize', onWindowResize, false);
+        }
+
+        function processData(rows) {
+            const validPoints = [];
+
+            // Filter valid coordinates
+            rows.forEach((row, i) => {
+                if (row.lat && row.lon) {
+                    validPoints.push(row);
+                }
+            });
+
+            if (validPoints.length === 0) {
+                alert("No valid GPS data found in CSV!");
+                return;
+            }
+
+            // Normalize coordinates: Make the first point (0,0,0)
+            latOffset = validPoints[0].lat;
+            lonOffset = validPoints[0].lon;
+
+            const vectors = [];
+
+            // Sub-sample to avoid extreme clutter and jaggy curves
+            // We'll take every Nth point, or points with sufficient distance
+            let lastV = null;
+
+            validPoints.forEach((row, i) => {
+                // Mapping: Latitude -> Z axis (North/South), Longitude -> X axis (East/West)
+                // Note: Standard maps have North as +Y or -Z. Let's use -Z for North.
+                const z = -(row.lat - latOffset) * scaleFactor;
+                const x = (row.lon - lonOffset) * scaleFactor;
+                const y = 0; // Keeping it flat initially
+
+                const v = new THREE.Vector3(x, y, z);
+
+                // Add point if it's the first, or if distance is far enough from last point
+                if (!lastV || v.distanceTo(lastV) > 2.0 || i === validPoints.length - 1) {
+                    vectors.push(v);
+
+                    // Save meta-data for UI lookup
+                    trainData.push({
+                        vec: v,
+                        place: row.place || row.locality || 'ทางหลวงแผ่นดิน',
+                        time: row.updated ? String(row.updated).replace('T', ' ').replace('Z', '') : '--:--',
+                        battery: row.battery || 0,
+                        charging: row.charging === true || row.charging === 'true'
+                    });
+
+                    lastV = v;
+                }
+            });
+
+            // Make the path curve
+            pathCurve = new THREE.CatmullRomCurve3(vectors);
+            pathCurve.tension = 0.5; // Smoothness
+            pathLength = pathCurve.getLength();
+
+            // Draw glowing cyan line
+            const tubeGeo = new THREE.TubeGeometry(pathCurve, vectors.length * 4, 0.4, 8, false);
+            const tubeMat = new THREE.MeshBasicMaterial({
+                color: 0x0ea5e9,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            lineObject = new THREE.Mesh(tubeGeo, tubeMat);
+            scene.add(lineObject);
+
+            // Removed building scatter logic to focus purely on the high-speed rail
+
+            // Add Waypoint markers
+            const sphereGeo = new THREE.SphereGeometry(0.8, 8, 8);
+            const sphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            vectors.forEach(v => {
+                const sp = new THREE.Mesh(sphereGeo, sphereMat);
+                sp.position.copy(v);
+                scene.add(sp);
+            });
+
+            // Minimap Indicator Dot
+            const dotGeo = new THREE.CircleGeometry(4, 16);
+            dotGeo.rotateX(-Math.PI / 2); // Lay flat
+            // Build the Train
+            buildTrain();
+
+            // Hide Loader
+            document.getElementById('loader').style.opacity = '0';
+            setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+
+            // Start Animation
+            isAnimating = true;
+            animate();
+        }
+
+        function buildTrain() {
+            // Create a gradient texture for the glass
+            const canvas = document.createElement('canvas');
+            canvas.width = 256; canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            const grd = ctx.createLinearGradient(0, 0, 0, 256);
+            grd.addColorStop(0, "#c0c0c0"); // Silver top
+            grd.addColorStop(1, "#050505"); // Black bottom
+            ctx.fillStyle = grd;
+            ctx.fillRect(0, 0, 256, 256);
+            const glassTex = new THREE.CanvasTexture(canvas);
+
+            const numCars = 6; // Multiple train cars
+            for (let i = 0; i < numCars; i++) {
+                const carMesh = new THREE.Group();
+                const isLead = (i === 0);
+
+                // 1. Main streamlined body (Capsule/Cylinder)
+                const bodyGeo = new THREE.CylinderGeometry(2, 2.5, 12, 16);
+                bodyGeo.rotateX(Math.PI / 2);
+
+                const bodyMat = new THREE.MeshStandardMaterial({
+                    color: 0x1e293b,
+                    metalness: 0.9,
+                    roughness: 0.1,
+                    clearcoat: 1.0,
+                    clearcoatRoughness: 0.1
+                });
+                const body = new THREE.Mesh(bodyGeo, bodyMat);
+                body.position.set(0, 2, 0);
+                carMesh.add(body);
+
+                // 2. Futuristic glowing side trims/stripes
+                const trimGeo = new THREE.BoxGeometry(4.2, 0.4, 10);
+                const trimMat = new THREE.MeshStandardMaterial({
+                    color: 0x0ea5e9,
+                    emissive: 0x0ea5e9,
+                    emissiveIntensity: 0.8
+                });
+                const trim = new THREE.Mesh(trimGeo, trimMat);
+                trim.position.set(0, 1.8, 0);
+                carMesh.add(trim);
+
+                if (isLead) {
+                    // 3. Front cockpit glass (angled)
+                    const glassGeo = new THREE.CylinderGeometry(1.5, 2.1, 3, 16, 1, false, 0, Math.PI);
+                    glassGeo.rotateX(Math.PI / 2);
+                    glassGeo.rotateZ(Math.PI / 2);
+                    const glassMat = new THREE.MeshPhysicalMaterial({
+                        color: 0xffffff,
+                        map: glassTex,
+                        metalness: 0.9,
+                        roughness: 0.1,
+                        transmission: 0.5, // glass-like
+                        thickness: 0.5
+                    });
+                    const glass = new THREE.Mesh(glassGeo, glassMat);
+                    glass.position.set(0, 3, -4);
+                    // Angle the nose glass
+                    glass.rotation.x = -Math.PI / 8;
+                    carMesh.add(glass);
+
+                    // 4. Headlights (Embedded in the nose)
+                    const lightL = new THREE.PointLight(0xffffff, 2, 80);
+                    lightL.position.set(-1.2, 1.5, -6);
+                    carMesh.add(lightL);
+
+                    const lightR = new THREE.PointLight(0xffffff, 2, 80);
+                    lightR.position.set(1.2, 1.5, -6);
+                    carMesh.add(lightR);
+
+                    // 5. Headlight volumetric cone (Sci-fi beam)
+                    const beamGeo = new THREE.ConeGeometry(6, 30, 32);
+                    beamGeo.rotateX(Math.PI / 2);
+                    beamGeo.translate(0, 0, -15);
+                    const beamMat = new THREE.MeshBasicMaterial({
+                        color: 0x38bdf8,
+                        transparent: true,
+                        opacity: 0.08,
+                        depthWrite: false,
+                        blending: THREE.AdditiveBlending
+                    });
+                    const beam = new THREE.Mesh(beamGeo, beamMat);
+                    beam.position.set(0, 1.5, 0);
+                    carMesh.add(beam);
+                }
+
+                // 6. Glowing Thruster/Engine back exhaust
+                const exhaustGeo = new THREE.CylinderGeometry(1.5, 1.5, 1, 16);
+                exhaustGeo.rotateX(Math.PI / 2);
+                const exhaustMat = new THREE.MeshBasicMaterial({
+                    color: (i === numCars - 1) ? 0xf97316 : 0x0ea5e9, // Orange/cyan contrast
+                    transparent: true,
+                    opacity: 0.8,
+                    blending: THREE.AdditiveBlending
+                });
+                const exhaust = new THREE.Mesh(exhaustGeo, exhaustMat);
+                exhaust.position.set(0, 2, 6);
+                carMesh.add(exhaust);
+
+                scene.add(carMesh);
+                trainCars.push(carMesh);
+            }
+
+            // Re-assign main variable used by cameras
+            trainMesh = trainCars[0];
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (isAnimating && pathCurve) {
+                // Advance path
+                pathProgress += animationSpeed;
+                if (pathProgress >= 1) pathProgress -= Math.floor(pathProgress); // Loop around
+
+                const carSpacingProgress = 13 / pathLength; // 13 units apart
+
+                // Position each car in the train
+                for (let i = 0; i < trainCars.length; i++) {
+                    let carProg = pathProgress - (i * carSpacingProgress);
+                    if (carProg < 0) carProg += 1; // Wrap around if at start
+
+                    const pt = pathCurve.getPointAt(carProg);
+                    const tan = pathCurve.getTangentAt(carProg).normalize();
+
+                    trainCars[i].position.copy(pt);
+                    trainCars[i].lookAt(pt.clone().sub(tan));
+                }
+
+                // Lead car variables for camera and UI logic
+                const point = pathCurve.getPointAt(pathProgress);
+
+                // Update Camera Logic Based on Mode
+                if (currentCamMode === 'dashcam') {
+                    const camOffset = new THREE.Vector3(0, 2.5, -1);
+                    camOffset.applyQuaternion(trainMesh.quaternion);
+                    camera.position.copy(point).add(camOffset);
+
+                    const lookAheadProgress = (pathProgress + 0.02) % 1;
+                    const futurePoint = pathCurve.getPointAt(lookAheadProgress);
+                    futurePoint.y += 1.5;
+                    controls.target.lerp(futurePoint, 0.1);
+
+                } else if (currentCamMode === 'chase') {
+                    // Position behind and slightly above the train
+                    const camOffset = new THREE.Vector3(0, 10, 25);
+                    camOffset.applyQuaternion(trainMesh.quaternion);
+                    camera.position.lerp(point.clone().add(camOffset), 0.1); // Smooth follow
+
+                    controls.target.lerp(point.clone().add(new THREE.Vector3(0, 2, 0)), 0.1);
+
+                } else if (currentCamMode === 'far') {
+                    // Position far back and high up, looking at the entire train segment
+                    const camOffset = new THREE.Vector3(30, 40, 50);
+                    // Add some sine wave wobble to the offset for cinematic feel based on progress
+                    const timeOffset = Math.sin(pathProgress * Math.PI * 4) * 20;
+                    camOffset.x += timeOffset;
+
+                    camera.position.lerp(point.clone().add(camOffset), 0.05); // Looser follow
+
+                    controls.target.lerp(point.clone(), 0.05);
+                }
+
+                controls.update();
+
+                // Update UI Overlay based on closest data node
+                updateHUD(point);
+            } else {
+                controls.update();
+            }
+
+            // Normal single viewport render
+            renderer.setViewport(0, 0, window.innerWidth, window.innerHeight);
+            renderer.setScissor(0, 0, window.innerWidth, window.innerHeight);
+            renderer.setScissorTest(true);
+            renderer.setClearColor(0x0b1120, 1);
+            renderer.clear();
+
+            renderer.render(scene, camera);
+        }
+
+        function setCameraMode(mode) {
+            currentCamMode = mode;
+            // Update button styles
+            document.querySelectorAll('.cam-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function updateHUD(currentPos) {
+            // Find closest datapoint index
+            // Optimally could be done by mathing progress * length, but iterative checking avoids drift
+            let closestDist = Infinity;
+            let bestData = null;
+
+            // Optimization: Only check a window of points around expected index
+            const expectedIndex = Math.floor(pathProgress * trainData.length);
+            const searchRadius = 10;
+            const startIdx = Math.max(0, expectedIndex - searchRadius);
+            const endIdx = Math.min(trainData.length - 1, expectedIndex + searchRadius);
+
+            for (let i = startIdx; i <= endIdx; i++) {
+                const dist = currentPos.distanceToSquared(trainData[i].vec);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    bestData = trainData[i];
+                }
+            }
+
+            if (bestData) {
+                document.getElementById('hud-place').innerText = bestData.place;
+                document.getElementById('hud-time').innerText = bestData.time;
+
+                document.getElementById('hud-batt-text').innerText = bestData.battery;
+                document.getElementById('hud-charging').style.display = bestData.charging ? 'inline' : 'none';
+
+                const battFill = document.getElementById('battery-fill');
+                battFill.style.width = bestData.battery + '%';
+
+                if (bestData.battery <= 20) {
+                    battFill.style.backgroundColor = '#ef4444';
+                } else if (bestData.battery <= 50) {
+                    battFill.style.backgroundColor = '#eab308';
+                } else {
+                    battFill.style.backgroundColor = '#22c55e';
+                }
+            }
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+    </script>
+</body>
+
+</html>
