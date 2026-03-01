@@ -33,7 +33,6 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            scroll-behavior: smooth;
         }
 
         body {
@@ -841,6 +840,49 @@
 
         reveals.forEach(reveal => {
             revealOnScroll.observe(reveal);
+        });
+
+        // Custom Smooth Scrolling with Offset & Slow Easing
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const navHeight = document.querySelector('nav').offsetHeight;
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset - navHeight;
+                    const startPosition = window.pageYOffset;
+                    const distance = targetPosition - startPosition;
+                    const duration = 1200; // 1.2 seconds for a premium, slow slide
+                    let start = null;
+
+                    window.requestAnimationFrame(step);
+
+                    function step(timestamp) {
+                        if (!start) start = timestamp;
+                        const progress = timestamp - start;
+
+                        // Ease In Out Quart function for very smooth acceleration & deceleration
+                        let percent = progress / duration;
+                        let easing = percent < 0.5
+                            ? 8 * percent * percent * percent * percent
+                            : 1 - Math.pow(-2 * percent + 2, 4) / 2;
+
+                        // Cap at 1
+                        if (percent >= 1) easing = 1;
+
+                        window.scrollTo(0, startPosition + distance * easing);
+
+                        if (progress < duration) {
+                            window.requestAnimationFrame(step);
+                        } else {
+                            window.scrollTo(0, targetPosition);
+                        }
+                    }
+                }
+            });
         });
 
         // Init Vanilla Tilt
