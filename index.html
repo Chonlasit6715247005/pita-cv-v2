@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chonlasit's Portfolio | Web3, IoT & 3D Interactive</title>
+    <title>Chonlasit Portfolio | Web3 & IoT Developer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -12,15 +12,20 @@
         rel="stylesheet">
     <style>
         :root {
-            --bg-color: #020617;
+            --bg-base: #020617;
             /* Slate 950 */
-            --card-bg: rgba(15, 23, 42, 0.6);
-            /* Slate 900 with opacity */
+            --bg-nav: rgba(2, 6, 23, 0.85);
+            /* Slate 900 blur */
+            --bg-panel: rgba(15, 23, 42, 0.6);
+
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
-            --border-color: rgba(255, 255, 255, 0.1);
-            --accent-glow: rgba(56, 189, 248, 0.15);
-            /* Sky Blue Glow */
+            --text-accent: #38bdf8;
+            /* Sky Blue */
+
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-hover: rgba(56, 189, 248, 0.5);
+
             --glass-blur: blur(16px);
         }
 
@@ -28,30 +33,25 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-base);
             color: var(--text-primary);
             line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 3rem 1rem;
-            position: relative;
             overflow-x: hidden;
 
-            /* Background Grid Effect */
+            /* Ambient Background Glow */
             background-image:
-                radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
+                radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.08), transparent 30%),
+                radial-gradient(circle at 85% 90%, rgba(139, 92, 246, 0.08), transparent 30%);
         }
 
         body::before {
             content: '';
-            position: absolute;
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
@@ -60,108 +60,225 @@
                 linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
             background-size: 30px 30px;
-            z-index: -1;
+            z-index: -10;
             pointer-events: none;
         }
 
-        .container {
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            background: var(--bg-nav);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border-bottom: 1px solid var(--border-primary);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-brand span {
+            color: var(--text-accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-accent);
+        }
+
+        /* Container Settings */
+        section {
+            padding: 100px 40px;
+            /* Space for fixed nav */
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             max-width: 1200px;
-            width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Typography & Layout Utility */
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+            color: #fff;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 3rem;
         }
 
         /* Hero Section */
-        .hero {
-            text-align: center;
-            margin-bottom: 5rem;
-            padding-top: 2rem;
+        #home {
+            min-height: 100vh;
+            padding-top: 15vh;
+            align-items: flex-start;
         }
 
-        .hero h1 {
-            font-size: 3.5rem;
+        .hero-title {
+            font-size: 4rem;
             font-weight: 800;
-            letter-spacing: -1px;
+            line-height: 1.2;
+            margin-bottom: 20px;
             background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
         }
 
-        .hero h2 {
-            font-size: 1.25rem;
-            font-weight: 400;
-            color: #38bdf8;
-            /* Sky Blue */
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 2rem;
+        .hero-desc {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin-bottom: 40px;
+        }
+
+        .ctas {
             display: flex;
-            align-items: center;
-            justify-content: center;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--text-accent);
+            color: #020617;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+            background: #7dd3fc;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-primary);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-accent);
+            color: var(--text-accent);
+        }
+
+        /* About Section */
+        #about .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
         }
 
-        .hero h2::before,
-        .hero h2::after {
-            content: '';
-            height: 1px;
-            width: 40px;
-            background: rgba(56, 189, 248, 0.5);
+        .skill-item {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-primary);
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #cbd5e1;
         }
 
-        /* Project Grid */
-        .grid {
+        /* Projects Section */
+        .project-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
         }
 
-        /* Card Styles (Glassmorphism) */
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 2rem;
+        .project-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
             text-decoration: none;
             position: relative;
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            min-height: 320px;
+            min-height: 350px;
         }
 
-        .card:hover {
+        .project-card:hover {
             transform: translateY(-8px);
             border-color: rgba(255, 255, 255, 0.2);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
 
-        /* Individual Card Accents */
-        .card.cv::before {
+        /* Specfic Card Colors */
+        .card-cv::before {
             background: linear-gradient(90deg, #8b5cf6, #d946ef);
         }
 
-        /* Purple/Pink */
-        .card.map::before {
+        .card-map::before {
             background: linear-gradient(90deg, #f59e0b, #ef4444);
         }
 
-        /* Orange/Red */
-        .card.dust::before {
+        .card-dust::before {
             background: linear-gradient(90deg, #0ea5e9, #3b82f6);
         }
 
-        /* Sky/Blue */
-        .card.flood::before {
+        .card-flood::before {
             background: linear-gradient(90deg, #10b981, #059669);
         }
 
-        /* Emerald */
-
-        .card::before {
+        .project-card::before {
             content: '';
             position: absolute;
             top: 0;
@@ -172,11 +289,10 @@
             transition: opacity 0.3s;
         }
 
-        .card:hover::before {
+        .project-card:hover::before {
             opacity: 1;
         }
 
-        /* Card Glow */
         .card-glow {
             position: absolute;
             bottom: -50px;
@@ -190,187 +306,306 @@
             pointer-events: none;
         }
 
-        .card.cv .card-glow {
+        .card-cv .card-glow {
             background: #8b5cf6;
         }
 
-        .card.map .card-glow {
+        .card-map .card-glow {
             background: #f59e0b;
         }
 
-        .card.dust .card-glow {
+        .card-dust .card-glow {
             background: #0ea5e9;
         }
 
-        .card.flood .card-glow {
+        .card-flood .card-glow {
             background: #10b981;
         }
 
-        .card:hover .card-glow {
+        .project-card:hover .card-glow {
             opacity: 0.4;
         }
 
-        /* Card Content */
-        .c-icon {
+        .p-icon {
             font-size: 2.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
             display: inline-block;
-            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
         }
 
-        .c-title {
+        .p-title {
             font-size: 1.4rem;
             font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 0.75rem;
-            letter-spacing: -0.5px;
+            color: #fff;
+            margin-bottom: 10px;
         }
 
-        .c-desc {
+        .p-desc {
             font-size: 0.95rem;
             color: var(--text-secondary);
             flex-grow: 1;
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
         }
 
-        .c-tags {
+        .p-tags {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
-            margin-bottom: 1.5rem;
+            margin-bottom: 20px;
         }
 
-        .c-tag {
+        .p-tag {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             padding: 4px 10px;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 6px;
             color: #cbd5e1;
         }
 
-        .c-action {
+        .p-action {
             display: flex;
             align-items: center;
             gap: 8px;
             font-size: 0.9rem;
             font-weight: 600;
-            color: #ffffff;
+            color: #fff;
             opacity: 0.7;
-            transition: opacity 0.3s, gap 0.3s;
+            transition: all 0.3s;
             text-transform: uppercase;
-            letter-spacing: 1px;
             margin-top: auto;
         }
 
-        .card.cv .c-action {
+        .card-cv .p-action {
             color: #d946ef;
         }
 
-        .card.map .c-action {
+        .card-map .p-action {
             color: #f59e0b;
         }
 
-        .card.dust .c-action {
+        .card-dust .p-action {
             color: #38bdf8;
         }
 
-        .card.flood .c-action {
+        .card-flood .p-action {
             color: #10b981;
         }
 
-        .card:hover .c-action {
+        .project-card:hover .p-action {
             opacity: 1;
             gap: 12px;
         }
 
+        /* Contact Section */
+        #contact {
+            text-align: center;
+            align-items: center;
+            min-height: 60vh;
+        }
+
+        .contact-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-primary);
+            padding: 60px;
+            border-radius: 16px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .contact-box p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border-primary);
+        }
+
+        /* Mobile Adjustments */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2.5rem;
+            .nav-links {
+                display: none;
             }
 
-            .hero h2 {
-                font-size: 1rem;
+            /* Could add hamburger memu later */
+            .hero-title {
+                font-size: 2.8rem;
             }
 
-            .grid {
+            #about .about-content {
                 grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 80px 20px;
+            }
+
+            .ctas {
+                flex-direction: column;
+            }
+
+            .btn {
+                text-align: center;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
 
-        <div class="hero">
-            <h1>Chonlasit's Portfolio</h1>
-            <h2>IoT · Web3 · 3D Interactive Data</h2>
+    <!-- Navbar -->
+    <nav>
+        <a href="#home" class="nav-brand">Chonlasit<span>.</span></a>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <!-- Home/Hero Section -->
+    <section id="home">
+        <h1 class="hero-title">สวัสดีครับ, ผม Chonlasit<br>Web3 & IoT Developer.</h1>
+        <p class="hero-desc">
+            สร้างสรรค์โปรดักส์ดิจิทัลที่ผสมผสานระหว่าง Logic และ Design เปลี่ยนข้อมูลที่ซับซ้อนให้กลายเป็นประสบการณ์
+            Interactive 3D และ Dashboard ที่ทรงพลัง
+        </p>
+        <div class="ctas">
+            <a href="#projects" class="btn btn-primary">ดูผลงานของฉัน 🚀</a>
+            <a href="#contact" class="btn btn-outline">ติดต่อพูดคุย 💬</a>
         </div>
+    </section>
 
-        <div class="grid">
+    <!-- About Section -->
+    <section id="about">
+        <h2 class="section-title">เกี่ยวกับฉัน</h2>
+        <div class="section-subtitle">Developer · Strategist · Data Visualizer</div>
 
-            <!-- 1. Executive CV -->
-            <a href="cv.html" class="card cv">
-                <div class="card-glow"></div>
-                <div class="c-icon">📄</div>
-                <h3 class="c-title">Executive CV</h3>
-                <p class="c-desc">Professional resume outlining experiences, education, and strategic frameworks.</p>
-                <div class="c-tags">
-                    <span class="c-tag">HTML/CSS</span>
-                    <span class="c-tag">Printable</span>
-                    <span class="c-tag">Dark Theme</span>
-                </div>
-                <div class="c-action">Read Profile <span>→</span></div>
-            </a>
-
-            <!-- 2. Campaign Map -->
-            <a href="workshop-map/travel-3d.html" class="card map">
-                <div class="card-glow"></div>
-                <div class="c-icon">🧭</div>
-                <h3 class="c-title">3D Campaign Trail Map</h3>
-                <p class="c-desc">Interactive WebGL simulation mapping geographical data into a 3D Earth experience.</p>
-                <div class="c-tags">
-                    <span class="c-tag">Three.js</span>
-                    <span class="c-tag">WebGL</span>
-                    <span class="c-tag">GPS CSV</span>
-                </div>
-                <div class="c-action">Explore Map <span>→</span></div>
-            </a>
-
-            <!-- 3. DustBoy 3D -->
-            <a href="workshop-map/dustboy-3d.html" class="card dust">
-                <div class="card-glow"></div>
-                <div class="c-icon">🌐</div>
-                <h3 class="c-title">DustBoy 3D Observatory</h3>
-                <p class="c-desc">Cyberpunk-styled spatial dashboard visualizing real-time PM2.5 data nationwide.</p>
-                <div class="c-tags">
-                    <span class="c-tag">MQTT WSS</span>
-                    <span class="c-tag">Three.js</span>
-                    <span class="c-tag">Sci-Fi UI</span>
-                </div>
-                <div class="c-action">Launch Cyberdeck <span>→</span></div>
-            </a>
-
-            <!-- 4. FloodBoy Blockchain -->
-            <a href="floodboy.html" class="card flood">
-                <div class="card-glow"></div>
-                <div class="c-icon">⛓️</div>
-                <h3 class="c-title">FloodBoy Telemetry</h3>
-                <p class="c-desc">Live blockchain-verified reader parsing IoT water sensor data and submersion alerts.
+        <div class="about-content">
+            <div class="about-text">
+                <p>
+                    ฉันเป็นนักพัฒนาที่หลงใหลในการผสมผสานระหว่างเทคโนโลยีขั้นสูง (Deep Tech)
+                    และการออกแบบที่มุ่งเน้นผู้ใช้งาน
+                    โดยมีความเชี่ยวชาญพิเศษในการดึงข้อมูลจากระบบ <strong>IoT Sensors</strong> และ <strong>Blockchain
+                        Smart Contracts</strong>
+                    มาสร้างเป็นระบบภาพเชิงโต้ตอบ (Interactive Visualizations) บนเว็บไชต์
                 </p>
-                <div class="c-tags">
-                    <span class="c-tag">Polygon Network</span>
-                    <span class="c-tag">Web3 API</span>
-                    <span class="c-tag">JSON Parse</span>
+                <p>
+                    นอกจากโค้ดที่สะอาดแล้ว ฉันยังให้ความสำคัญกับ UI/UX แบบ Premium Dark Theme ที่ดูน่าเชื่อถือและทันสมัย
+                    พร้อมแก้ไขปัญหาจริงด้วยวิสัยทัศน์ระดับ Executive Strategy
+                </p>
+            </div>
+
+            <div>
+                <h3 style="margin-bottom: 20px; font-weight: 600; color: #fff;">เทคโนโลยีที่ฉันเชี่ยวชาญ</h3>
+                <div class="skills-grid">
+                    <div class="skill-item">💻 HTML5 & CSS3</div>
+                    <div class="skill-item">⚡ JavaScript (ES6+)</div>
+                    <div class="skill-item">🌐 WebGL & Three.js</div>
+                    <div class="skill-item">📡 MQTT & IoT WSS</div>
+                    <div class="skill-item">⛓️ Web3 & Viem.js</div>
+                    <div class="skill-item">📊 Data Visualization</div>
                 </div>
-                <div class="c-action">View Blockchain <span>→</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects">
+        <h2 class="section-title">ผลงานที่โดดเด่น</h2>
+        <div class="section-subtitle">Featured Interactive Projects</div>
+
+        <div class="project-grid">
+
+            <!-- CV -->
+            <a href="cv.html" class="project-card card-cv">
+                <div class="card-glow"></div>
+                <div class="p-icon">📄</div>
+                <h3 class="p-title">Executive CV</h3>
+                <p class="p-desc">เรซูเม่และประวัติการทำงานระดับผู้บริหาร ออกแบบเน้นความน่าเชื่อถือด้วย Executive Dark
+                    Theme พิมพ์เป็นเอกสารได้สมบูรณ์แบบ</p>
+                <div class="p-tags">
+                    <span class="p-tag">Strategic Leadership</span>
+                    <span class="p-tag">CSS Print</span>
+                </div>
+                <div class="p-action">เปิดดูเรซูเม่ 🎓</div>
+            </a>
+
+            <!-- Map -->
+            <a href="workshop-map/travel-3d.html" target="_blank" class="project-card card-map">
+                <div class="card-glow"></div>
+                <div class="p-icon">🧭</div>
+                <h3 class="p-title">3D Campaign Trail Map</h3>
+                <p class="p-desc">แผนที่ 3D Earth จำลองการเดินทางและหาเสียงเลือกตั้งทั่วประเทศ
+                    ดึงข้อมูลเส้นทางจริงจากไฟล์ CSV แสดงผลผ่าน WebGL</p>
+                <div class="p-tags">
+                    <span class="p-tag">Three.js</span>
+                    <span class="p-tag">WebGL</span>
+                    <span class="p-tag">GPS Data</span>
+                </div>
+                <div class="p-action">เปิดดูโปรเจกต์ 🚀</div>
+            </a>
+
+            <!-- DustBoy -->
+            <a href="workshop-map/dustboy-3d.html" target="_blank" class="project-card card-dust">
+                <div class="card-glow"></div>
+                <div class="p-icon">🌐</div>
+                <h3 class="p-title">DustBoy 3D Observatory</h3>
+                <p class="p-desc">Live Dashboard สไตล์ไซเบอร์พังก์ ตรวจจับฝุ่น PM2.5 แบบ Real-time
+                    ทั่วประเทศผ่านเซฟเวอร์ MQTT โชว์ทะลุมิติแบบ 3D</p>
+                <div class="p-tags">
+                    <span class="p-tag">MQTT WSS</span>
+                    <span class="p-tag">Microservices</span>
+                    <span class="p-tag">Sci-Fi UI</span>
+                </div>
+                <div class="p-action">เปิดดูโปรเจกต์ 🛸</div>
+            </a>
+
+            <!-- FloodBoy -->
+            <a href="floodboy.html" target="_blank" class="project-card card-flood">
+                <div class="card-glow"></div>
+                <div class="p-icon">⛓️</div>
+                <h3 class="p-title">FloodBoy Dashboard</h3>
+                <p class="p-desc">ระบบมอนิเตอร์ระดับน้ำและแบตเตอรี่ดึงข้อมูลดิบจาก Smart Contract (Polygon Blockchain)
+                    พร้อมระบบแจ้งเตือนน้ำท่วมอัตโนมัติ</p>
+                <div class="p-tags">
+                    <span class="p-tag">Blockchain Reader</span>
+                    <span class="p-tag">CORS Proxy</span>
+                </div>
+                <div class="p-action">เปิดดูโปรเจกต์ 📊</div>
             </a>
 
         </div>
+    </section>
 
-    </div>
+    <!-- Contact Section -->
+    <section id="contact">
+        <h2 class="section-title">มาทำความรู้จักกัน</h2>
+        <div class="section-subtitle">Get In Touch</div>
+
+        <div class="contact-box">
+            <h3 style="font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 20px;">Let's build something
+                great together.</h3>
+            <p>
+                หากคุณมีไอเดียโปรเจกต์ที่น่าสนใจ ไม่ว่าจะเป็น Web3, Dashboard หรือ 3D Interactive
+                หรือกำลังมองหาทีมงานมาร่วมพัฒนาระบบ สามารถทักทายเข้ามาได้เสมอครับ
+            </p>
+            <a href="mailto:chonlasit@example.com" class="btn btn-primary" style="display: inline-block;">ส่งอีเมลถึงฉัน
+                📧</a>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Chonlasit Portfolio. Driven by Tech & Strategy.</p>
+    </footer>
+
 </body>
 
 </html>
