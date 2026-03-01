@@ -301,6 +301,10 @@
             background: linear-gradient(90deg, #10b981, #059669);
         }
 
+        .card-game::before {
+            background: linear-gradient(90deg, #ef4444, #facc15);
+        }
+
         .project-card::before {
             content: '';
             position: absolute;
@@ -343,6 +347,10 @@
 
         .card-flood .card-glow {
             background: #10b981;
+        }
+
+        .card-game .card-glow {
+            background: #ef4444;
         }
 
         .project-card:hover .card-glow {
@@ -413,6 +421,10 @@
 
         .card-flood .p-action {
             color: #10b981;
+        }
+
+        .card-game .p-action {
+            color: #facc15;
         }
 
         .project-card:hover .p-action {
@@ -603,6 +615,21 @@
                     <span class="p-tag">CORS Proxy</span>
                 </div>
                 <div class="p-action">เปิดดูโปรเจกต์ 📊</div>
+            </a>
+
+            <!-- Oracle Race -->
+            <a href="oracle-race.html" target="_blank" class="project-card card-game">
+                <div class="card-glow"></div>
+                <div class="p-icon">🎮</div>
+                <h3 class="p-title">Oracle Space Race</h3>
+                <p class="p-desc">ระบบเกมแข่งกด Spacebar แบบ Multiplayer Real-time เก็บสถิติเวลา Leaderboard
+                    บนระบบฐานข้อมูลไร้ศูนย์กลาง (MQTT Retain)</p>
+                <div class="p-tags">
+                    <span class="p-tag">MQTT WSS</span>
+                    <span class="p-tag">Retained Topic</span>
+                    <span class="p-tag">Game Logic</span>
+                </div>
+                <div class="p-action">เข้าเริ่มแข่งขัน 🏁</div>
             </a>
 
         </div>
