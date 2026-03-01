@@ -481,6 +481,24 @@
             display: inline-block;
         }
 
+        .p-icon-img {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            display: inline-block;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover .p-icon-img {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
         .p-title {
             font-size: 1.4rem;
             font-weight: 700;
@@ -692,7 +710,7 @@
             <!-- CV -->
             <a href="cv.html" class="project-card card-cv">
                 <div class="card-glow"></div>
-                <div class="p-icon">📄</div>
+                <img src="assets/icons/icon_cv.png" alt="Executive CV" class="p-icon-img">
                 <h3 class="p-title">Executive CV</h3>
                 <p class="p-desc">เรซูเม่และประวัติการทำงานระดับผู้บริหาร ออกแบบเน้นความน่าเชื่อถือด้วย Executive Dark
                     Theme พิมพ์เป็นเอกสารได้สมบูรณ์แบบ</p>
@@ -706,7 +724,7 @@
             <!-- Map -->
             <a href="workshop-map/travel-3d.html" target="_blank" class="project-card card-map">
                 <div class="card-glow"></div>
-                <div class="p-icon">🧭</div>
+                <img src="assets/icons/icon_map.png" alt="3D Campaign Trail Map" class="p-icon-img">
                 <h3 class="p-title">3D Campaign Trail Map</h3>
                 <p class="p-desc">แผนที่ 3D Earth จำลองการเดินทางและหาเสียงเลือกตั้งทั่วประเทศ
                     ดึงข้อมูลเส้นทางจริงจากไฟล์ CSV แสดงผลผ่าน WebGL</p>
@@ -721,7 +739,7 @@
             <!-- DustBoy -->
             <a href="workshop-map/dustboy-3d.html" target="_blank" class="project-card card-dust">
                 <div class="card-glow"></div>
-                <div class="p-icon">🌐</div>
+                <img src="assets/icons/icon_dustboy.png" alt="DustBoy 3D Observatory" class="p-icon-img">
                 <h3 class="p-title">DustBoy 3D Observatory</h3>
                 <p class="p-desc">Live Dashboard สไตล์ไซเบอร์พังก์ ตรวจจับฝุ่น PM2.5 แบบ Real-time
                     ทั่วประเทศผ่านเซฟเวอร์ MQTT โชว์ทะลุมิติแบบ 3D</p>
@@ -736,7 +754,7 @@
             <!-- FloodBoy -->
             <a href="floodboy.html" target="_blank" class="project-card card-flood">
                 <div class="card-glow"></div>
-                <div class="p-icon">⛓️</div>
+                <img src="assets/icons/icon_floodboy.png" alt="FloodBoy Dashboard" class="p-icon-img">
                 <h3 class="p-title">FloodBoy Dashboard</h3>
                 <p class="p-desc">ระบบมอนิเตอร์ระดับน้ำและแบตเตอรี่ดึงข้อมูลดิบจาก Smart Contract (Polygon Blockchain)
                     พร้อมระบบแจ้งเตือนน้ำท่วมอัตโนมัติ</p>
@@ -750,7 +768,7 @@
             <!-- Oracle Race -->
             <a href="oracle-race.html" target="_blank" class="project-card card-game">
                 <div class="card-glow"></div>
-                <div class="p-icon">🎮</div>
+                <img src="assets/icons/icon_spacerace.png" alt="Oracle Space Race" class="p-icon-img">
                 <h3 class="p-title">Oracle Space Race</h3>
                 <p class="p-desc">ระบบเกมแข่งกด Spacebar แบบ Multiplayer Real-time เก็บสถิติเวลา Leaderboard
                     บนระบบฐานข้อมูลไร้ศูนย์กลาง (MQTT Retain)</p>
