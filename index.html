@@ -4,21 +4,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pita Limjaroenrat - Executive & Political CV</title>
+    <title>Chonlasit's Portfolio | Web3, IoT & 3D Interactive</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0d1117;
-            /* Deep sleek dark */
-            --card-bg: #161b22;
-            --text-primary: #c9d1d9;
-            --text-secondary: #8b949e;
-            --accent-color: #F47521;
-            /* Move Forward / People's Party Orange */
-            --accent-glow: rgba(244, 117, 33, 0.2);
-            --border-color: #30363d;
+            --bg-color: #020617;
+            /* Slate 950 */
+            --card-bg: rgba(15, 23, 42, 0.6);
+            /* Slate 900 with opacity */
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --accent-glow: rgba(56, 189, 248, 0.15);
+            /* Sky Blue Glow */
+            --glass-blur: blur(16px);
         }
 
         * {
@@ -32,593 +35,341 @@
             background-color: var(--bg-color);
             color: var(--text-primary);
             line-height: 1.6;
-            padding: 2rem;
-            font-size: 14px;
-        }
-
-        .cv-container {
-            max-width: 950px;
-            margin: 0 auto;
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 3rem 1rem;
             position: relative;
-            /* Adding a subtle top border glow */
+            overflow-x: hidden;
+
+            /* Background Grid Effect */
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08), transparent 25%);
         }
 
-        .cv-container::before {
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 30px 30px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 5rem;
+            padding-top: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #f8fafc 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .hero h2 {
+            font-size: 1.25rem;
+            font-weight: 400;
+            color: #38bdf8;
+            /* Sky Blue */
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .hero h2::before,
+        .hero h2::after {
+            content: '';
+            height: 1px;
+            width: 40px;
+            background: rgba(56, 189, 248, 0.5);
+        }
+
+        /* Project Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Card Styles (Glassmorphism) */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            min-height: 320px;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Individual Card Accents */
+        .card.cv::before {
+            background: linear-gradient(90deg, #8b5cf6, #d946ef);
+        }
+
+        /* Purple/Pink */
+        .card.map::before {
+            background: linear-gradient(90deg, #f59e0b, #ef4444);
+        }
+
+        /* Orange/Red */
+        .card.dust::before {
+            background: linear-gradient(90deg, #0ea5e9, #3b82f6);
+        }
+
+        /* Sky/Blue */
+        .card.flood::before {
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        /* Emerald */
+
+        .card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #F47521, #FF9E5E);
+            opacity: 0.8;
+            transition: opacity 0.3s;
         }
 
-        /* Header */
-        .cv-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding: 3rem;
-            border-bottom: 1px solid var(--border-color);
-            background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
-        }
-
-        .header-name h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: -1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .header-name h2 {
-            font-size: 1.1rem;
-            font-weight: 400;
-            color: var(--accent-color);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .header-contact {
-            text-align: right;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-
-        .header-contact p {
-            margin-bottom: 0.25rem;
-        }
-
-        /* Base Body Grid */
-        .cv-body {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 3rem;
-            padding: 3rem;
-        }
-
-        /* Sections */
-        .cv-section {
-            margin-bottom: 2.5rem;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border-color);
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background-color: var(--accent-color);
-        }
-
-        /* Left Col Details */
-        .item {
-            margin-bottom: 1.5rem;
-        }
-
-        .item-title {
-            font-weight: 600;
-            color: #ffffff;
-            font-size: 1rem;
-        }
-
-        .item-subtitle {
-            color: var(--accent-color);
-            font-size: 0.85rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .item-desc {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .skills-list {
-            list-style: none;
-        }
-
-        .skills-list li {
-            position: relative;
-            padding-left: 1.5rem;
-            margin-bottom: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        .skills-list li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            color: var(--accent-color);
-        }
-
-        .highlight-box {
-            background: rgba(244, 117, 33, 0.05);
-            border: 1px solid rgba(244, 117, 33, 0.2);
-            padding: 1rem;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .highlight-box:hover {
-            box-shadow: 0 0 15px var(--accent-glow);
-            border-color: var(--accent-color);
-        }
-
-        /* Right Col Details */
-        .experience-item {
-            margin-bottom: 2rem;
-        }
-
-        .exp-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 0.25rem;
-        }
-
-        .exp-title {
-            font-size: 1.15rem;
-            font-weight: 600;
-            color: #ffffff;
-        }
-
-        .exp-date {
-            font-size: 0.85rem;
-            color: var(--accent-color);
-            font-weight: 600;
-        }
-
-        .exp-company {
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 0.75rem;
-            font-size: 0.95rem;
-        }
-
-        .exp-bullets {
-            list-style: none;
-        }
-
-        .exp-bullets li {
-            position: relative;
-            padding-left: 1.25rem;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-        }
-
-        .exp-bullets li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 8px;
-            width: 6px;
-            height: 6px;
-            background-color: var(--accent-color);
-            border-radius: 50%;
-        }
-
-        /* Portfolio Grid */
-        .portfolio-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .project-card {
-            display: flex;
-            flex-direction: column;
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 1.25rem;
-            position: relative;
-            overflow: hidden;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .project-card:hover {
-            transform: translateY(-5px);
-            background: rgba(30, 41, 59, 0.8);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Specific Card Borders & Glows */
-        .map-card {
-            border-left: 3px solid #F47521;
-        }
-
-        .map-card:hover {
-            border-color: #F47521;
-        }
-
-        .map-card .card-glow {
-            background: radial-gradient(circle at top right, rgba(244, 117, 33, 0.15) 0%, transparent 60%);
-        }
-
-        .obs-card {
-            border-left: 3px solid #0ea5e9;
-        }
-
-        .obs-card:hover {
-            border-color: #0ea5e9;
-        }
-
-        .obs-card .card-glow {
-            background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.15) 0%, transparent 60%);
-        }
-
-        .flood-card {
-            border-left: 3px solid #10b981;
-        }
-
-        .flood-card:hover {
-            border-color: #10b981;
-        }
-
-        .flood-card .card-glow {
-            background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.15) 0%, transparent 60%);
-        }
-
-        .card-glow {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 120px;
-            height: 120px;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-            opacity: 0.5;
-        }
-
-        .project-card:hover .card-glow {
+        .card:hover::before {
             opacity: 1;
         }
 
-        .project-header {
+        /* Card Glow */
+        .card-glow {
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .card.cv .card-glow {
+            background: #8b5cf6;
+        }
+
+        .card.map .card-glow {
+            background: #f59e0b;
+        }
+
+        .card.dust .card-glow {
+            background: #0ea5e9;
+        }
+
+        .card.flood .card-glow {
+            background: #10b981;
+        }
+
+        .card:hover .card-glow {
+            opacity: 0.4;
+        }
+
+        /* Card Content */
+        .c-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.2));
+        }
+
+        .c-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        .c-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            flex-grow: 1;
+            margin-bottom: 1.5rem;
+        }
+
+        .c-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .c-tag {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #cbd5e1;
+        }
+
+        .c-action {
             display: flex;
             align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .p-icon {
-            font-size: 1.25rem;
-            margin-right: 10px;
-        }
-
-        .p-title {
-            color: #ffffff;
-            font-size: 1rem;
+            gap: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
+            color: #ffffff;
+            opacity: 0.7;
+            transition: opacity 0.3s, gap 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: auto;
         }
 
-        .map-card .p-title {
-            color: #F47521;
+        .card.cv .c-action {
+            color: #d946ef;
         }
 
-        .obs-card .p-title {
-            color: #0ea5e9;
+        .card.map .c-action {
+            color: #f59e0b;
         }
 
-        .flood-card .p-title {
+        .card.dust .c-action {
+            color: #38bdf8;
+        }
+
+        .card.flood .c-action {
             color: #10b981;
         }
 
-        .p-desc {
-            color: var(--text-secondary);
-            font-size: 0.8rem;
-            line-height: 1.4;
-            margin-bottom: 1rem;
-            flex-grow: 1;
-        }
-
-        .tech-stack {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .tech-tag {
-            font-size: 0.65rem;
-            padding: 3px 8px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            color: #c9d1d9;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-weight: 500;
-            letter-spacing: 0.5px;
+        .card:hover .c-action {
+            opacity: 1;
+            gap: 12px;
         }
 
         @media (max-width: 768px) {
-            .cv-body {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero h2 {
+                font-size: 1rem;
+            }
+
+            .grid {
                 grid-template-columns: 1fr;
-            }
-
-            .cv-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-
-            .header-contact {
-                text-align: left;
-            }
-        }
-
-        /* Print Styles */
-        @media print {
-            body {
-                background-color: white;
-                color: black;
-                padding: 0;
-            }
-
-            .cv-container {
-                border: none;
-                box-shadow: none;
-                max-width: 100%;
-                color: black;
-            }
-
-            .cv-header {
-                background: none;
-                padding: 2rem 0;
-                border-bottom: 2px solid #333;
-            }
-
-            .cv-body {
-                padding: 2rem 0;
-            }
-
-            .header-name h1,
-            .exp-title,
-            .item-title,
-            .section-title {
-                color: black;
-            }
-
-            .header-name h2,
-            .exp-date,
-            .item-subtitle,
-            .section-title::after {
-                color: #F47521;
-            }
-
-            .text-secondary,
-            .item-desc,
-            .exp-bullets li,
-            .skills-list li,
-            .header-contact {
-                color: #333;
-            }
-
-            .highlight-box {
-                background: #fff5eb;
-                border-color: #ffccaa;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="cv-container">
-        <!-- Header -->
-        <header class="cv-header">
-            <div class="header-name">
-                <h1>Pita Limjaroenrat</h1>
-                <h2>Reformist Leader, Public Policy Expert & Tech Executive</h2>
-            </div>
-            <div class="header-contact">
-                <p>Location: Bangkok, Thailand</p>
-                <p>Focus: Political Reform, Macroeconomics, Tech Innovation</p>
-                <p>Legacy: The "5-Button Theory" & 2023 Election Victory</p>
-            </div>
-        </header>
+    <div class="container">
 
-        <!-- Main Content -->
-        <main class="cv-body">
-            <!-- Left Column -->
-            <aside class="left-col">
-                <section class="cv-section">
-                    <h3 class="section-title">Education</h3>
-                    <div class="item">
-                        <h4 class="item-title">Harvard University</h4>
-                        <p class="item-subtitle">Master in Public Administration (MPA)</p>
-                        <p class="item-desc">First Thai scholar at John F. Kennedy School of Government (2011).</p>
-                    </div>
-                    <div class="item">
-                        <h4 class="item-title">Massachusetts Institute of Technology (MIT)</h4>
-                        <p class="item-subtitle">Master in Business Administration (MBA)</p>
-                        <p class="item-desc">Sloan School of Management (2011).</p>
-                    </div>
-                    <div class="item">
-                        <h4 class="item-title">Thammasat University</h4>
-                        <p class="item-subtitle">B.B.A. in Finance</p>
-                        <p class="item-desc">First-Class Honors. Foundation in macroeconomics.</p>
-                    </div>
-                </section>
+        <div class="hero">
+            <h1>Chonlasit's Portfolio</h1>
+            <h2>IoT · Web3 · 3D Interactive Data</h2>
+        </div>
 
-                <section class="cv-section">
-                    <h3 class="section-title">Core Competencies</h3>
-                    <ul class="skills-list">
-                        <li>Public Policy & Structural Reform</li>
-                        <li>Corporate Finance & Turnarounds</li>
-                        <li>Structural Economics & Demopoly</li>
-                        <li>Tech Innovation (Unicorn Executive)</li>
-                        <li>Academic Diplomacy & Global Networks</li>
-                    </ul>
-                </section>
+        <div class="grid">
 
-                <section class="cv-section">
-                    <h3 class="section-title">Key Frameworks</h3>
-                    <div class="item highlight-box">
-                        <h4 class="item-title">The "5-Button" Theory</h4>
-                        <p class="item-desc">Groundbreaking agricultural reform model addressing: 1. Land Ownership, 2.
-                            Debt Restructuring, 3. Cost Control, 4. Innovation, 5. Agro-Tourism.</p>
-                    </div>
+            <!-- 1. Executive CV -->
+            <a href="cv.html" class="card cv">
+                <div class="card-glow"></div>
+                <div class="c-icon">📄</div>
+                <h3 class="c-title">Executive CV</h3>
+                <p class="c-desc">Professional resume outlining experiences, education, and strategic frameworks.</p>
+                <div class="c-tags">
+                    <span class="c-tag">HTML/CSS</span>
+                    <span class="c-tag">Printable</span>
+                    <span class="c-tag">Dark Theme</span>
+                </div>
+                <div class="c-action">Read Profile <span>→</span></div>
+            </a>
 
-                    <div style="margin-top: 3rem;">
-                        <h3 class="section-title">Web3 & Interactive Portfolio</h3>
-                        <div class="portfolio-grid">
+            <!-- 2. Campaign Map -->
+            <a href="workshop-map/travel-3d.html" class="card map">
+                <div class="card-glow"></div>
+                <div class="c-icon">🧭</div>
+                <h3 class="c-title">3D Campaign Trail Map</h3>
+                <p class="c-desc">Interactive WebGL simulation mapping geographical data into a 3D Earth experience.</p>
+                <div class="c-tags">
+                    <span class="c-tag">Three.js</span>
+                    <span class="c-tag">WebGL</span>
+                    <span class="c-tag">GPS CSV</span>
+                </div>
+                <div class="c-action">Explore Map <span>→</span></div>
+            </a>
 
-                            <!-- Project 1: Campaign Map -->
-                            <a href="workshop-map/travel-3d.html" target="_blank" class="project-card map-card">
-                                <div class="card-glow"></div>
-                                <div class="project-header">
-                                    <span class="p-icon">🧭</span>
-                                    <h4 class="p-title">3D Campaign Trail Map</h4>
-                                </div>
-                                <p class="p-desc">Interactive 3D visualization of the election campaign journey across
-                                    Thailand.</p>
-                                <div class="tech-stack">
-                                    <span class="tech-tag">Three.js</span>
-                                    <span class="tech-tag">WebGL</span>
-                                    <span class="tech-tag">GPS Data</span>
-                                </div>
-                            </a>
+            <!-- 3. DustBoy 3D -->
+            <a href="workshop-map/dustboy-3d.html" class="card dust">
+                <div class="card-glow"></div>
+                <div class="c-icon">🌐</div>
+                <h3 class="c-title">DustBoy 3D Observatory</h3>
+                <p class="c-desc">Cyberpunk-styled spatial dashboard visualizing real-time PM2.5 data nationwide.</p>
+                <div class="c-tags">
+                    <span class="c-tag">MQTT WSS</span>
+                    <span class="c-tag">Three.js</span>
+                    <span class="c-tag">Sci-Fi UI</span>
+                </div>
+                <div class="c-action">Launch Cyberdeck <span>→</span></div>
+            </a>
 
-                            <!-- Project 2: DustBoy -->
-                            <a href="workshop-map/dustboy-3d.html" target="_blank" class="project-card obs-card">
-                                <div class="card-glow"></div>
-                                <div class="project-header">
-                                    <span class="p-icon">🌐</span>
-                                    <h4 class="p-title">DustBoy 3D Observatory</h4>
-                                </div>
-                                <p class="p-desc">Sci-Fi style live 3D dashboard monitoring PM2.5 air quality sensors
-                                    nationwide.</p>
-                                <div class="tech-stack">
-                                    <span class="tech-tag">MQTT</span>
-                                    <span class="tech-tag">Real-time IoT</span>
-                                    <span class="tech-tag">Three.js</span>
-                                </div>
-                            </a>
+            <!-- 4. FloodBoy Blockchain -->
+            <a href="floodboy.html" class="card flood">
+                <div class="card-glow"></div>
+                <div class="c-icon">⛓️</div>
+                <h3 class="c-title">FloodBoy Telemetry</h3>
+                <p class="c-desc">Live blockchain-verified reader parsing IoT water sensor data and submersion alerts.
+                </p>
+                <div class="c-tags">
+                    <span class="c-tag">Polygon Network</span>
+                    <span class="c-tag">Web3 API</span>
+                    <span class="c-tag">JSON Parse</span>
+                </div>
+                <div class="c-action">View Blockchain <span>→</span></div>
+            </a>
 
-                            <!-- Project 3: FloodBoy -->
-                            <a href="floodboy.html" target="_blank" class="project-card flood-card">
-                                <div class="card-glow"></div>
-                                <div class="project-header">
-                                    <span class="p-icon">⛓️</span>
-                                    <h4 class="p-title">FloodBoy Telemetry</h4>
-                                </div>
-                                <p class="p-desc">Blockchain-verified water level monitoring dashboard with live
-                                    warnings.</p>
-                                <div class="tech-stack">
-                                    <span class="tech-tag">Web3</span>
-                                    <span class="tech-tag">Polygon PoS</span>
-                                    <span class="tech-tag">Live Feed</span>
-                                </div>
-                            </a>
+        </div>
 
-                        </div>
-                    </div>
-                </section>
-            </aside>
-
-            <!-- Right Column -->
-            <article class="right-col">
-                <section class="cv-section">
-                    <h3 class="section-title">Executive & Professional Experience</h3>
-
-                    <div class="experience-item">
-                        <div class="exp-header">
-                            <h4 class="exp-title">Visiting Senior Fellow</h4>
-                            <span class="exp-date">2024 - Present</span>
-                        </div>
-                        <p class="exp-company">Harvard Kennedy School & Global Academic Engagements</p>
-                        <ul class="exp-bullets">
-                            <li>Engaging global academic institutions (Yale, Asia Pacific Foundation) on Southeast Asian
-                                democracy, institutional reform, and BRICS alliances.</li>
-                            <li>Architecting international discourse regarding the intersection of legal mechanisms and
-                                political viability (Lawfare analysis).</li>
-                        </ul>
-                    </div>
-
-                    <div class="experience-item">
-                        <div class="exp-header">
-                            <h4 class="exp-title">Party Leader & Prime Minister Candidate</h4>
-                            <span class="exp-date">2020 - 2024</span>
-                        </div>
-                        <p class="exp-company">Move Forward Party</p>
-                        <ul class="exp-bullets">
-                            <li>Led the party to an unprecedented historic victory in the 2023 General Election,
-                                securing 151 parliamentary seats and winning the popular vote.</li>
-                            <li>Spearheaded anti-monopoly campaigns and structural democratization initiatives,
-                                transforming Thailand's political landscape from personality-driven to ideology-based
-                                politics.</li>
-                            <li>Coined the "Lost Decade" framing to drive narrative surrounding economic and democratic
-                                stagnation under military-backed regimes.</li>
-                        </ul>
-                    </div>
-
-                    <div class="experience-item">
-                        <div class="exp-header">
-                            <h4 class="exp-title">Executive Director</h4>
-                            <span class="exp-date">2017 - 2018</span>
-                        </div>
-                        <p class="exp-company">Grab Thailand</p>
-                        <ul class="exp-bullets">
-                            <li>Directed operational and strategic initiatives for a regional tech unicorn.</li>
-                            <li>Scaled mobility, logistics, and financial technology services across Thailand.</li>
-                        </ul>
-                    </div>
-
-                    <div class="experience-item">
-                        <div class="exp-header">
-                            <h4 class="exp-title">Managing Director & CEO</h4>
-                            <span class="exp-date">Mid-2000s</span>
-                        </div>
-                        <p class="exp-company">CEO Agrifood</p>
-                        <ul class="exp-bullets">
-                            <li>Took over a distressed family business suffering a 100-million-baht deficit.</li>
-                            <li>Restructured corporate debt and rebuilt the supply chain.</li>
-                            <li>Successfully turned the company into one of Asia's largest rice bran oil producers
-                                within two years.</li>
-                        </ul>
-                    </div>
-
-                </section>
-            </article>
-        </main>
     </div>
 </body>
 
