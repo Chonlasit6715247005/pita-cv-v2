@@ -11,18 +11,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap"
         rel="stylesheet">
 
     <style>
         :root {
             --dark-bg: #030712;
             --neon-blue: #0ea5e9;
+            --neon-blue-glow: rgba(14, 165, 233, 0.5);
             --neon-green: #10b981;
             --neon-orange: #f59e0b;
             --neon-red: #ef4444;
-            --panel-bg: rgba(15, 23, 42, 0.6);
-            --panel-border: rgba(14, 165, 233, 0.3);
+            --panel-bg: rgba(3, 7, 18, 0.75);
+            --panel-border: rgba(14, 165, 233, 0.4);
+            --glass-blur: blur(16px);
         }
 
         * {
@@ -30,6 +32,7 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Rajdhani', sans-serif;
+            user-select: none;
         }
 
         body {
@@ -58,27 +61,52 @@
             height: 100%;
             z-index: 10;
             pointer-events: none;
-            /* Let clicks pass through to 3D canvas */
             display: grid;
-            grid-template-columns: 350px 1fr 350px;
-            grid-template-rows: 80px 1fr 100px;
-            padding: 20px;
-            gap: 20px;
+            grid-template-columns: 380px 1fr 380px;
+            grid-template-rows: 90px 1fr 120px;
+            padding: 24px;
+            gap: 24px;
+            background: radial-gradient(circle at center, transparent 40%, rgba(3, 7, 18, 0.8) 100%);
         }
 
         /* General Panel Styles */
         .panel {
             background: var(--panel-bg);
-            backdrop-filter: blur(12px);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
             border: 1px solid var(--panel-border);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(14, 165, 233, 0.05);
             pointer-events: auto;
-            /* Re-enable clicks inside panels */
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* Decorative Corners for Panels */
+        .panel::before,
+        .panel::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 2px solid var(--neon-blue);
+        }
+
+        .panel::before {
+            top: -1px;
+            left: -1px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .panel::after {
+            bottom: -1px;
+            right: -1px;
+            border-left: none;
+            border-top: none;
         }
 
         .header {
@@ -87,26 +115,80 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 2px solid var(--neon-blue);
-            padding-bottom: 10px;
-            background: linear-gradient(90deg, rgba(14, 165, 233, 0.2) 0%, transparent 100%);
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.15) 0%, rgba(3, 7, 18, 0.8) 100%);
+            border-radius: 0;
+            border-left: 4px solid var(--neon-blue);
+            padding: 0 30px;
+        }
+
+        .header::before,
+        .header::after {
+            display: none;
+        }
+
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .title-icon {
+            font-size: 2.5rem;
+            animation: pulse-icon 2s infinite;
+        }
+
+        @keyframes pulse-icon {
+            0% {
+                text-shadow: 0 0 10px var(--neon-blue);
+            }
+
+            50% {
+                text-shadow: 0 0 30px var(--neon-blue), 0 0 10px #fff;
+            }
+
+            100% {
+                text-shadow: 0 0 10px var(--neon-blue);
+            }
         }
 
         .title {
             font-family: 'Orbitron', sans-serif;
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 900;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--neon-blue);
-            text-shadow: 0 0 10px rgba(14, 165, 233, 0.8);
+            letter-spacing: 4px;
+            background: linear-gradient(to right, #fff, var(--neon-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .title sub {
+            font-family: 'Rajdhani';
+            font-size: 1rem;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            -webkit-text-fill-color: initial;
+            margin-left: 10px;
+        }
+
+        .status-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
         }
 
         .status-indicator {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-weight: 600;
+            gap: 12px;
+            font-weight: 700;
             font-size: 1.2rem;
+            letter-spacing: 2px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .status-dot {
@@ -114,7 +196,15 @@
             height: 12px;
             border-radius: 50%;
             background-color: var(--neon-red);
-            box-shadow: 0 0 10px var(--neon-red);
+            box-shadow: 0 0 15px var(--neon-red);
+        }
+
+        .sys-time {
+            font-family: 'Orbitron';
+            color: var(--neon-blue);
+            font-size: 0.9rem;
+            margin-top: 5px;
+            letter-spacing: 1px;
         }
 
         /* Left Side: Real-time Stats feed */
@@ -126,10 +216,31 @@
         .stats-title {
             font-family: 'Orbitron';
             color: var(--neon-blue);
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            border-bottom: 1px dashed var(--panel-border);
-            padding-bottom: 5px;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(14, 165, 233, 0.3);
+            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .stats-title::before {
+            content: '■';
+            margin-right: 10px;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            from {
+                opacity: 0.2;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .feed-container {
@@ -137,51 +248,157 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
+            padding-right: 5px;
         }
 
         .feed-container::-webkit-scrollbar {
             width: 4px;
         }
 
+        .feed-container::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
         .feed-container::-webkit-scrollbar-thumb {
             background: var(--neon-blue);
+            border-radius: 4px;
         }
 
         .data-card {
-            background: rgba(0, 0, 0, 0.5);
-            border-left: 3px solid var(--neon-blue);
-            padding: 10px;
-            font-size: 0.9rem;
-            animation: fadeIn 0.3s ease-out forwards;
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0.8) 0%, rgba(15, 23, 42, 0.4) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-left: 4px solid var(--neon-blue);
+            padding: 12px 16px;
+            border-radius: 6px;
+            animation: slideInRight 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transition: transform 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+
+        .data-card:hover {
+            transform: translateX(5px);
+            background: linear-gradient(90deg, rgba(14, 165, 233, 0.1) 0%, rgba(15, 23, 42, 0.6) 100%);
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .data-card .mac-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+            padding-bottom: 4px;
         }
 
         .data-card .mac {
-            color: #94a3b8;
-            font-size: 0.8rem;
-            margin-bottom: 5px;
+            font-family: 'Orbitron';
+            color: #cbd5e1;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+        }
+
+        .data-card .time {
+            color: #64748b;
+            font-size: 0.75rem;
         }
 
         .data-card .metrics {
             display: flex;
             justify-content: space-between;
+            align-items: flex-end;
             font-weight: 600;
         }
 
         .data-card .val-pm {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
+            font-family: 'Orbitron';
+            line-height: 1;
         }
 
-        /* Right Side: Charts */
+        .data-card .unit {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-left: 5px;
+            font-family: 'Rajdhani';
+        }
+
+        /* Right Side: Charts & Details */
         .right-panel {
             grid-column: 3;
             grid-row: 2;
+            display: flex;
+            flex-direction: column;
         }
 
-        .chart-container {
+        .chart-wrapper {
             flex: 1;
             position: relative;
-            margin-top: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrapper::after {
+            content: 'TRAFFIC_MONITOR_v2.1';
+            position: absolute;
+            bottom: 5px;
+            right: 10px;
+            font-size: 0.6rem;
+            color: rgba(255, 255, 255, 0.2);
+            font-family: 'Orbitron';
+            pointer-events: none;
+        }
+
+        /* Target Info Box */
+        .target-box {
+            background: rgba(14, 165, 233, 0.05);
+            border: 1px dashed var(--neon-blue);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 120px;
+        }
+
+        .target-box-title {
+            font-size: 0.8rem;
+            color: var(--neon-blue);
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .target-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .t-stat {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px;
+            border-radius: 4px;
+            font-family: 'Orbitron';
+        }
+
+        .t-stat span {
+            display: block;
+            font-family: 'Rajdhani';
+            font-size: 0.7rem;
+            color: #94a3b8;
+            letter-spacing: 1px;
         }
 
         /* Bottom Center: Global Avg */
@@ -191,58 +408,173 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 40px;
+            gap: 60px;
+            background: linear-gradient(180deg, transparent 0%, rgba(14, 165, 233, 0.1) 100%);
+            border-bottom: 4px solid var(--neon-blue);
+            border-top: none;
+            border-left: none;
+            border-right: none;
         }
 
         .metric-big {
             text-align: center;
+            position: relative;
+        }
+
+        .metric-big::after {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-big:last-child::after {
+            display: none;
         }
 
         .metric-big .label {
-            font-size: 1rem;
-            color: #94a3b8;
+            font-size: 1.1rem;
+            color: var(--neon-blue);
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            font-weight: 600;
+            margin-bottom: 5px;
         }
 
         .metric-big .value {
             font-family: 'Orbitron';
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-weight: 700;
             color: #fff;
-            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateX(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
+        .metric-big .unit {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            font-family: 'Rajdhani';
+            font-weight: 500;
         }
 
-        /* Air Quality Colors */
+        /* Air Quality Colors & Glows */
         .aqi-good {
             color: var(--neon-green);
             border-color: var(--neon-green);
-            text-shadow: 0 0 8px var(--neon-green);
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
         }
 
         .aqi-mod {
             color: var(--neon-orange);
             border-color: var(--neon-orange);
-            text-shadow: 0 0 8px var(--neon-orange);
+            text-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
         }
 
         .aqi-bad {
             color: var(--neon-red);
             border-color: var(--neon-red);
-            text-shadow: 0 0 8px var(--neon-red);
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+
+        /* Crosshair overlay in center */
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(14, 165, 233, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: slowRotate 20s linear infinite;
+        }
+
+        .crosshair::before {
+            content: '';
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(14, 165, 233, 0.3) 50%, transparent 100%);
+            position: absolute;
+        }
+
+        .crosshair::after {
+            content: '';
+            height: 100%;
+            width: 1px;
+            background: linear-gradient(180deg, transparent 0%, rgba(14, 165, 233, 0.3) 50%, transparent 100%);
+            position: absolute;
+        }
+
+        .crosshair-inner {
+            width: 150px;
+            height: 150px;
+            border: 1px dashed rgba(14, 165, 233, 0.3);
+            border-radius: 50%;
+            animation: slowRotateReverse 15s linear infinite;
+        }
+
+        @keyframes slowRotate {
+            100% {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        @keyframes slowRotateReverse {
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+
+        /* GUI Grid Background */
+        .grid-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 2;
+            pointer-events: none;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+    
+        /* Masterpiece UI Utilities */
+        @media (pointer: fine) {
+            body, a, button, input, select { cursor: none !important; }
+        }
+        .cursor-dot, .cursor-outline {
+            position: fixed; top: 0; left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%; z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 8px; height: 8px;
+            background-color: #0ea5e9;
+            box-shadow: 0 0 10px #0ea5e9;
+        }
+        .cursor-outline {
+            width: 40px; height: 40px;
+            border: 1px solid rgba(14, 165, 233, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        #nebula-canvas {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 9998;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -252,48 +584,96 @@
     <!-- 3D Environment -->
     <div id="canvas-container"></div>
 
+    <!-- Decorative overlays -->
+    <div class="grid-bg"></div>
+    <div class="crosshair">
+        <div class="crosshair-inner"></div>
+    </div>
+
     <!-- UI Overlay -->
     <div class="hud-container">
         <!-- Header -->
         <header class="header panel">
-            <div class="title">NEXUS // DUSTBOY LIVE OVSERVATORY</div>
-            <div class="status-indicator">
-                <span id="conn-text">DISCONNECTED</span>
-                <div class="status-dot" id="conn-dot"></div>
+            <div class="title-wrapper">
+                <span class="title-icon">🌐</span>
+                <div class="title">NEXUS <sub>// DUSTBOY 3D OVSERVATORY</sub></div>
+            </div>
+            <div class="status-container">
+                <div class="status-indicator">
+                    <div class="status-dot" id="conn-dot"></div>
+                    <span id="conn-text">DISCONNECTED</span>
+                </div>
+                <div class="sys-time" id="sys-time">SYS_TIME: 00:00:00</div>
             </div>
         </header>
 
         <!-- Left feed -->
         <aside class="left-panel panel">
-            <div class="stats-title">&gt; LIVE SENSOR STREAM</div>
+            <div class="stats-title">
+                <span>&gt; LIVE SENSOR STREAM</span>
+                <span style="font-size: 0.8rem; color: #64748b;">(MAX 30)</span>
+            </div>
             <div class="feed-container" id="feed">
-                <!-- Cards injected here -->
+                <div
+                    style="text-align: center; color: rgba(255,255,255,0.3); padding-top: 50px; font-family: 'Orbitron'; font-size: 0.9rem;">
+                    AWAITING TELEMETRY...
+                </div>
             </div>
         </aside>
 
         <!-- Right charts -->
         <aside class="right-panel panel">
-            <div class="stats-title">&gt; NETWORK ACTIVITY</div>
-            <div class="chart-container">
+            <div class="stats-title">&gt; NETWORK ACTIVITY LOG</div>
+            <div class="chart-wrapper">
                 <canvas id="pulseChart"></canvas>
+            </div>
+
+            <div class="stats-title" style="margin-top: 10px;">&gt; LAST TARGET</div>
+            <div class="target-box" id="target-box">
+                <div class="target-box-title" id="t-mac">NO TARGET SELECTED</div>
+                <div class="target-grid">
+                    <div class="t-stat"><span>PM2.5</span>
+                        <div id="t-pm25">--</div>
+                    </div>
+                    <div class="t-stat"><span>PM10</span>
+                        <div id="t-pm10">--</div>
+                    </div>
+                    <div class="t-stat"><span>TEMP</span>
+                        <div id="t-temp">--</div>
+                    </div>
+                    <div class="t-stat"><span>HUMID</span>
+                        <div id="t-humid">--</div>
+                    </div>
+                </div>
             </div>
         </aside>
 
         <!-- Bottom Avg -->
-        <div class="bottom-panel panel" style="flex-direction: row;">
+        <div class="bottom-panel panel">
             <div class="metric-big">
-                <div class="label">AVG PM2.5</div>
-                <div class="value" id="g-pm25">--</div>
+                <div class="label">ACTIVE NODES</div>
+                <div class="value" id="g-nodes">0</div>
             </div>
             <div class="metric-big">
-                <div class="label">NODES ACTIVE</div>
-                <div class="value" id="g-nodes">0</div>
+                <div class="label">GLOBAL AVG PM2.5</div>
+                <div class="value" id="g-pm25">--<span class="unit">µg/m³</span></div>
+            </div>
+            <div class="metric-big">
+                <div class="label">NETWORK STATUS</div>
+                <div class="value"
+                    style="color: var(--neon-green); font-size: 2.5rem; text-shadow: 0 0 15px var(--neon-green);"
+                    id="g-health">OPTIMAL</div>
             </div>
         </div>
     </div>
 
     <!-- Logic Setup -->
     <script>
+        // Clock
+        setInterval(() => {
+            document.getElementById('sys-time').innerText = 'SYS_TIME: ' + new Date().toLocaleTimeString('en-US', { hour12: false });
+        }, 1000);
+
         // ==========================================
         // 1. DATA MANAGEMENT & GLOBALS
         // ==========================================
@@ -321,60 +701,97 @@
         // ==========================================
         // 2. THREE.JS 3D VISUALIZATION (Sci-Fi Data Core)
         // ==========================================
-        let scene, camera, renderer, coreGroup, particles;
-        const spheres = new Map(); // visual representation of nodes
+        let scene, camera, renderer, coreGroup, particles, innerCore, outerRings;
+        const spheres = new Map();
 
         function init3D() {
             const container = document.getElementById('canvas-container');
 
             scene = new THREE.Scene();
-            scene.fog = new THREE.FogExp2(0x030712, 0.002);
+            scene.fog = new THREE.FogExp2(0x030712, 0.0015);
 
             camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
-            camera.position.set(0, 50, 200);
+            camera.position.set(0, 80, 250);
             camera.lookAt(0, 0, 0);
 
-            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Perf optimization
+
+            // Post-processing like bloom removed for perf, using native tricks instead
             container.appendChild(renderer.domElement);
 
             coreGroup = new THREE.Group();
             scene.add(coreGroup);
 
-            // Center Energy Core
-            const coreGeo = new THREE.IcosahedronGeometry(20, 2);
-            const coreMat = new THREE.MeshBasicMaterial({
+            // Center Energy Core - Complex
+            const coreGeo = new THREE.IcosahedronGeometry(25, 2);
+            const coreMat = new THREE.MeshPhongMaterial({
                 color: 0x0ea5e9,
                 wireframe: true,
                 transparent: true,
-                opacity: 0.3
+                opacity: 0.4,
+                emissive: 0x0ea5e9,
+                emissiveIntensity: 0.5
             });
-            const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-            coreGroup.add(coreMesh);
+            innerCore = new THREE.Mesh(coreGeo, coreMat);
+            coreGroup.add(innerCore);
 
-            // Ambient background particles
+            // Solid center
+            const solidGeo = new THREE.IcosahedronGeometry(15, 1);
+            const solidMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+            const solidCore = new THREE.Mesh(solidGeo, solidMat);
+            coreGroup.add(solidCore);
+
+            // Tech rings
+            outerRings = new THREE.Group();
+            const ringGeo = new THREE.TorusGeometry(50, 0.5, 16, 100);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.3 });
+
+            for (let i = 0; i < 3; i++) {
+                const r = new THREE.Mesh(ringGeo, ringMat);
+                r.rotation.x = Math.random() * Math.PI;
+                r.rotation.y = Math.random() * Math.PI;
+                outerRings.add(r);
+            }
+            coreGroup.add(outerRings);
+
+            // Ambient background particles (Stars/Data dust)
             const pGeo = new THREE.BufferGeometry();
-            const pCount = 2000;
+            const pCount = 3000;
             const posArray = new Float32Array(pCount * 3);
-            for (let i = 0; i < pCount * 3; i++) {
-                posArray[i] = (Math.random() - 0.5) * 500;
+            const colorArray = new Float32Array(pCount * 3);
+
+            const colorBlue = new THREE.Color(0x0ea5e9);
+            const colorDark = new THREE.Color(0x0284c7);
+
+            for (let i = 0; i < pCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 800;
+                posArray[i + 1] = (Math.random() - 0.5) * 800;
+                posArray[i + 2] = (Math.random() - 0.5) * 800;
+
+                const ratio = Math.random();
+                colorArray[i] = colorBlue.r * ratio + colorDark.r * (1 - ratio);
+                colorArray[i + 1] = colorBlue.g * ratio + colorDark.g * (1 - ratio);
+                colorArray[i + 2] = colorBlue.b * ratio + colorDark.b * (1 - ratio);
             }
             pGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            pGeo.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+
             const pMat = new THREE.PointsMaterial({
-                size: 1.5,
-                color: 0x0ea5e9,
+                size: 2,
+                vertexColors: true,
                 transparent: true,
-                opacity: 0.4,
+                opacity: 0.6,
                 blending: THREE.AdditiveBlending
             });
             particles = new THREE.Points(pGeo, pMat);
             scene.add(particles);
 
             // Lighting
-            const ambient = new THREE.AmbientLight(0xffffff, 0.2);
+            const ambient = new THREE.AmbientLight(0xffffff, 0.3);
             scene.add(ambient);
-            const pointL = new THREE.PointLight(0x0ea5e9, 2, 300);
+            const pointL = new THREE.PointLight(0x0ea5e9, 3, 400);
             pointL.position.set(0, 0, 0);
             scene.add(pointL);
 
@@ -387,17 +804,18 @@
             const colorObj = new THREE.Color(getAqiColor(pm25));
 
             if (!mesh) {
-                // Spawn new 3D representation for sensor
-                const geo = new THREE.SphereGeometry(3, 16, 16);
-                const mat = new THREE.MeshBasicMaterial({
+                // Spawn new 3D representation
+                const geo = new THREE.SphereGeometry(3.5, 16, 16);
+                const mat = new THREE.MeshPhongMaterial({
                     color: colorObj,
-                    transparent: true,
-                    opacity: 0.8
+                    emissive: colorObj,
+                    emissiveIntensity: 0.5,
+                    shininess: 100
                 });
                 mesh = new THREE.Mesh(geo, mat);
 
-                // Random position in a spherical orbit
-                const radius = 60 + Math.random() * 80;
+                // Complex Orbit positioning
+                const radius = 80 + Math.random() * 100; // Spread further
                 const theta = Math.random() * Math.PI * 2;
                 const phi = Math.acos((Math.random() * 2) - 1);
 
@@ -405,9 +823,21 @@
                 mesh.position.y = radius * Math.sin(phi) * Math.sin(theta);
                 mesh.position.z = radius * Math.cos(phi);
 
-                // Link line to core
+                // Add halo ring to the node
+                const haloGeo = new THREE.RingGeometry(5, 6, 16);
+                const haloMat = new THREE.MeshBasicMaterial({ color: colorObj, transparent: true, opacity: 0.5, side: THREE.DoubleSide });
+                const halo = new THREE.Mesh(haloGeo, haloMat);
+                halo.lookAt(0, 0, 0);
+                mesh.add(halo);
+
+                // Link line to core (Data stream laser)
                 const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), mesh.position]);
-                const lineMat = new THREE.LineBasicMaterial({ color: colorObj, transparent: true, opacity: 0.2 });
+                const lineMat = new THREE.LineBasicMaterial({
+                    color: colorObj,
+                    transparent: true,
+                    opacity: 0.15,
+                    blending: THREE.AdditiveBlending
+                });
                 const line = new THREE.Line(lineGeo, lineMat);
 
                 const group = new THREE.Group();
@@ -415,13 +845,32 @@
                 group.add(line);
 
                 coreGroup.add(group);
-                spheres.set(mac, { group: group, mesh: mesh, line: line, mat: mat, lineMat: lineMat });
+
+                // Store rotation speed data
+                const orbitSpeed = (Math.random() * 0.004) - 0.002;
+                const orbitAxis = new THREE.Vector3(Math.random(), Math.random(), Math.random()).normalize();
+
+                spheres.set(mac, {
+                    group: group,
+                    mesh: mesh,
+                    line: line,
+                    mat: mat,
+                    halo: halo,
+                    orbitSpeed: orbitSpeed,
+                    orbitAxis: orbitAxis,
+                    targetScale: 1
+                });
             } else {
                 // Update existing
-                mesh.mesh.material.color = colorObj;
+                mesh.mat.color = colorObj;
+                mesh.mat.emissive = colorObj;
                 mesh.line.material.color = colorObj;
-                // Animate pop effect
-                mesh.mesh.scale.set(1.5, 1.5, 1.5);
+                mesh.halo.material.color = colorObj;
+
+                // Pop effect and bright line flash
+                mesh.targetScale = 1.8;
+                mesh.mesh.scale.set(2, 2, 2);
+                mesh.line.material.opacity = 0.8;
             }
         }
 
@@ -433,19 +882,44 @@
 
         function animate3D() {
             requestAnimationFrame(animate3D);
+            const time = Date.now() * 0.001;
 
-            // Rotate core
-            coreGroup.rotation.y += 0.002;
-            coreGroup.rotation.x += 0.001;
+            // Rotate core layers
+            innerCore.rotation.y += 0.003;
+            innerCore.rotation.x += 0.002;
 
-            // Rotate ambient particles
-            particles.rotation.y -= 0.001;
+            outerRings.children.forEach((ring, i) => {
+                ring.rotation.x += 0.005 * (i % 2 == 0 ? 1 : -1);
+                ring.rotation.y += 0.004 * (i % 3 == 0 ? -1 : 1);
+            });
 
-            // Shrink node meshes back to normal after pop
+            // Ambient breathing
+            particles.rotation.y = Math.sin(time * 0.1) * 0.2;
+            camera.position.y = 80 + Math.sin(time * 0.5) * 10;
+            camera.lookAt(0, 0, 0);
+
+            // Update nodes
             spheres.forEach(obj => {
+                // Smooth scale down from pops
                 if (obj.mesh.scale.x > 1) {
-                    obj.mesh.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1);
+                    obj.mesh.scale.lerp(new THREE.Vector3(1, 1, 1), 0.05);
                 }
+                // Fade data line back to dim
+                if (obj.line.material.opacity > 0.15) {
+                    obj.line.material.opacity -= 0.02;
+                }
+
+                // Micro orbits around center
+                obj.mesh.position.applyAxisAngle(obj.orbitAxis, obj.orbitSpeed);
+                // Keep halo facing center or camera
+                obj.halo.lookAt(camera.position);
+
+                // Update line geometry to follow new position
+                const positions = obj.line.geometry.attributes.position.array;
+                positions[3] = obj.mesh.position.x;
+                positions[4] = obj.mesh.position.y;
+                positions[5] = obj.mesh.position.z;
+                obj.line.geometry.attributes.position.needsUpdate = true;
             });
 
             renderer.render(scene, camera);
@@ -458,7 +932,7 @@
         const chartData = {
             labels: [],
             datasets: [{
-                label: 'Updates / Sec',
+                label: 'Updates/Sec',
                 data: [],
                 borderColor: '#0ea5e9',
                 backgroundColor: 'rgba(14, 165, 233, 0.2)',
@@ -471,6 +945,13 @@
 
         function initChart() {
             const ctx = document.getElementById('pulseChart').getContext('2d');
+
+            // Add gradient
+            let gradient = ctx.createLinearGradient(0, 0, 0, 200);
+            gradient.addColorStop(0, 'rgba(14, 165, 233, 0.6)');
+            gradient.addColorStop(1, 'rgba(14, 165, 233, 0.0)');
+            chartData.datasets[0].backgroundColor = gradient;
+
             activityChart = new Chart(ctx, {
                 type: 'line',
                 data: chartData,
@@ -478,15 +959,20 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     animation: false,
-                    plugins: { legend: { display: false } },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
+                    },
                     scales: {
                         x: { display: false },
                         y: {
                             display: true,
-                            grid: { color: 'rgba(14, 165, 233, 0.1)' },
-                            ticks: { color: '#94a3b8' }
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: '#64748b', font: { family: 'Orbitron' } },
+                            beginAtZero: true
                         }
-                    }
+                    },
+                    layout: { padding: 0 }
                 }
             });
 
@@ -496,13 +982,13 @@
                 chartData.labels.push(now);
                 chartData.datasets[0].data.push(updateCounter);
 
-                if (chartData.labels.length > 20) {
+                if (chartData.labels.length > 30) {
                     chartData.labels.shift();
                     chartData.datasets[0].data.shift();
                 }
 
                 activityChart.update();
-                updateCounter = 0; // reset for next second
+                updateCounter = 0; // reset
             }, 1000);
         }
 
@@ -512,17 +998,23 @@
         function initMQTT() {
             const host = "dustboy-wss-bridge.laris.workers.dev";
             const port = 443;
-            const clientId = "vis3d_" + Math.random().toString(16).substr(2, 8);
+            const clientId = "vis3d_nexus_" + Math.random().toString(16).substr(2, 8);
 
             const client = new Paho.MQTT.Client(host, port, "/mqtt", clientId);
 
             client.onConnectionLost = (resp) => {
-                document.getElementById("conn-text").innerText = "DISCONNECTED";
-                document.getElementById("conn-text").style.color = "var(--neon-red)";
-                document.getElementById("conn-dot").style.backgroundColor = "var(--neon-red)";
-                document.getElementById("conn-dot").style.boxShadow = "0 0 10px var(--neon-red)";
+                const txt = document.getElementById("conn-text");
+                const dot = document.getElementById("conn-dot");
 
-                // Try reconnect in 5s
+                txt.innerText = "LINK SEVERED";
+                txt.style.color = "var(--neon-red)";
+                dot.style.backgroundColor = "var(--neon-red)";
+                dot.style.boxShadow = "0 0 20px var(--neon-red)";
+
+                document.getElementById('g-health').innerText = "CRITICAL";
+                document.getElementById('g-health').style.color = "var(--neon-red)";
+                document.getElementById('g-health').style.textShadow = "0 0 15px var(--neon-red)";
+
                 setTimeout(() => client.connect(options), 5000);
             };
 
@@ -530,8 +1022,6 @@
                 updateCounter++;
                 try {
                     const payload = JSON.parse(message.payloadString);
-                    // Extract data (handling different possible DustBoy formats)
-                    // Common fields: pm25, pm10, temp, humid
                     let pm25 = payload.pm25 || payload.PM25;
                     let mac = payload.mac || message.destinationName.split('/')[2] || "UNKNOWN";
 
@@ -539,18 +1029,24 @@
                         pm25 = parseFloat(pm25);
                         processData(mac, pm25, payload);
                     }
-                } catch (e) {
-                    // Ignore non-json or malformed
-                }
+                } catch (e) { }
             };
 
             const options = {
                 useSSL: true,
                 onSuccess: () => {
-                    document.getElementById("conn-text").innerText = "STREAM ACTIVE";
-                    document.getElementById("conn-text").style.color = "var(--neon-green)";
-                    document.getElementById("conn-dot").style.backgroundColor = "var(--neon-green)";
-                    document.getElementById("conn-dot").style.boxShadow = "0 0 10px var(--neon-green)";
+                    const txt = document.getElementById("conn-text");
+                    const dot = document.getElementById("conn-dot");
+
+                    txt.innerText = "LINK ESTABLISHED";
+                    txt.style.color = "var(--neon-green)";
+                    dot.style.backgroundColor = "var(--neon-green)";
+                    dot.style.boxShadow = "0 0 20px var(--neon-green)";
+
+                    document.getElementById('g-health').innerText = "OPTIMAL";
+                    document.getElementById('g-health').style.color = "var(--neon-green)";
+                    document.getElementById('g-health').style.textShadow = "0 0 15px var(--neon-green)";
+
                     client.subscribe("DUSTBOY/+/+/+/status");
                 },
                 onFailure: (e) => {
@@ -564,9 +1060,18 @@
         // ==========================================
         // 5. DATA PROCESSING & DOM UPDATES
         // ==========================================
+        let firstMessage = true;
+
         function processData(mac, pm25, fullData) {
-            // Update mapping
             nodesData.set(mac, pm25);
+
+            // Update Target Box with latest data
+            document.getElementById('t-mac').innerText = `TARGET_ID: ${mac}`;
+            document.getElementById('t-pm25').innerText = pm25;
+            document.getElementById('t-pm25').className = getAqiClass(pm25);
+            document.getElementById('t-pm10').innerText = fullData.pm10 || fullData.PM10 || '--';
+            document.getElementById('t-temp').innerText = fullData.temp || fullData.TEMP || '--';
+            document.getElementById('t-humid').innerText = fullData.humid || fullData.HUMID || '--';
 
             // Global aggregates
             const numNodes = nodesData.size;
@@ -575,23 +1080,38 @@
             const avg = (sum / numNodes).toFixed(1);
 
             document.getElementById('g-nodes').innerText = numNodes;
-            document.getElementById('g-pm25').innerText = avg;
+            document.getElementById('g-pm25').innerHTML = `${avg} <span class="unit">µg/m³</span>`;
             document.getElementById('g-pm25').className = 'value ' + getAqiClass(avg);
 
             // Update UI Feed
             const feed = document.getElementById('feed');
+
+            if (firstMessage) {
+                feed.innerHTML = ''; // clear awaiting msg
+                firstMessage = false;
+            }
+
             const card = document.createElement('div');
             card.className = 'data-card';
-            card.style.borderColor = getAqiColor(pm25);
 
-            const time = new Date().toLocaleTimeString();
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
             card.innerHTML = `
-                <div class="mac">${mac} // ${time}</div>
+                <div class="mac-header">
+                    <span class="mac">${mac}</span>
+                    <span class="time">${time}</span>
+                </div>
                 <div class="metrics">
-                    <span>PM2.5:</span>
-                    <span class="val-pm ${getAqiClass(pm25)}">${pm25} µg/m³</span>
+                    <span style="font-size: 0.8rem; color: #94a3b8; font-weight:500;">PM2.5</span>
+                    <div>
+                        <span class="val-pm ${getAqiClass(pm25)}">${pm25}</span>
+                        <span class="unit">µg/m³</span>
+                    </div>
                 </div>
             `;
+
+            // Hover interaction logic for 3D highlight
+            card.onmouseenter = () => highlightNode3D(mac, true);
+            card.onmouseleave = () => highlightNode3D(mac, false);
 
             feed.insertBefore(card, feed.firstChild);
             if (feed.children.length > 30) {
@@ -600,6 +1120,21 @@
 
             // Trigger 3D update
             addOrUpdateNode3D(mac, pm25);
+        }
+
+        function highlightNode3D(mac, isEnter) {
+            const mesh = spheres.get(mac);
+            if (!mesh) return;
+
+            if (isEnter) {
+                mesh.mesh.scale.set(3, 3, 3);
+                mesh.halo.scale.set(1.5, 1.5, 1.5);
+                mesh.line.material.opacity = 1.0;
+                mesh.line.material.linewidth = 2; // WebGL limitation, might not work on all browsers but safe to add
+            } else {
+                mesh.mesh.scale.set(1, 1, 1);
+                mesh.halo.scale.set(1, 1, 1);
+            }
         }
 
         // ==========================================
@@ -611,6 +1146,53 @@
             initMQTT();
         };
 
+    </script>
+
+    <!-- Masterpiece UI -->
+    <canvas id="nebula-canvas"></canvas>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <script>
+        // Custom Cursor
+        const dot = document.querySelector('.cursor-dot');
+        const outline = document.querySelector('.cursor-outline');
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            dot.style.left = `${mouseX}px`; dot.style.top = `${mouseY}px`;
+            if(outline.animate) {
+                outline.animate({ left: `${mouseX}px`, top: `${mouseY}px` }, { duration: 500, fill: "forwards" });
+            } else {
+                outline.style.left = `${mouseX}px`; outline.style.top = `${mouseY}px`;
+            }
+        });
+        document.querySelectorAll('a, button, input, select, .cam-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                outline.style.width = '60px'; outline.style.height = '60px';
+                outline.style.backgroundColor = 'rgba(14, 165, 233, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                outline.style.width = '40px'; outline.style.height = '40px';
+                outline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Dynamic Nebula Glow
+        const canvasNebula = document.getElementById("nebula-canvas");
+        const ctxNebula = canvasNebula.getContext("2d");
+        let wNebula = canvasNebula.width = window.innerWidth, hNebula = canvasNebula.height = window.innerHeight;
+        window.addEventListener("resize", () => { wNebula = canvasNebula.width = window.innerWidth; hNebula = canvasNebula.height = window.innerHeight; });
+        function drawNebula() {
+            ctxNebula.clearRect(0, 0, wNebula, hNebula);
+            const gradient = ctxNebula.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 800);
+            gradient.addColorStop(0, "rgba(14, 165, 233, 0.08)");
+            gradient.addColorStop(0.5, "rgba(14, 165, 233, 0.03)");
+            gradient.addColorStop(1, "transparent");
+            ctxNebula.fillStyle = gradient; ctxNebula.fillRect(0, 0, wNebula, hNebula);
+            requestAnimationFrame(drawNebula);
+        }
+        drawNebula();
     </script>
 </body>
 

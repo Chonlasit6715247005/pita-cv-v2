@@ -437,6 +437,53 @@
                 border-color: #ffccaa;
             }
         }
+
+        /* Masterpiece UI Utilities */
+        @media (pointer: fine) {
+
+            body,
+            a,
+            button,
+            input,
+            select {
+                cursor: none !important;
+            }
+        }
+
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-color);
+        }
+
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(244, 117, 33, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+
+        #nebula-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 9998;
+            pointer-events: none;
+        }
     </style>
 </head>
 
@@ -570,6 +617,80 @@
             </article>
         </main>
     </div>
+
+    <!-- Masterpiece UI -->
+    <canvas id="nebula-canvas"></canvas>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <script>
+        // Custom Cursor
+        const dot = document.querySelector('.cursor-dot');
+        const outline = document.querySelector('.cursor-outline');
+        let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            dot.style.left = `${mouseX}px`; dot.style.top = `${mouseY}px`;
+            if (outline.animate) {
+                outline.animate({ left: `${mouseX}px`, top: `${mouseY}px` }, { duration: 500, fill: "forwards" });
+            } else {
+                outline.style.left = `${mouseX}px`; outline.style.top = `${mouseY}px`;
+            }
+        });
+        document.querySelectorAll('a, button, input, select').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                outline.style.width = '60px'; outline.style.height = '60px';
+                outline.style.backgroundColor = 'rgba(244, 117, 33, 0.1)';
+            });
+            el.addEventListener('mouseleave', () => {
+                outline.style.width = '40px'; outline.style.height = '40px';
+                outline.style.backgroundColor = 'transparent';
+            });
+        });
+
+        // Dynamic Nebula Glow
+        const canvas = document.getElementById("nebula-canvas");
+        const ctx = canvas.getContext("2d");
+        let width = canvas.width = window.innerWidth, height = canvas.height = window.innerHeight;
+        window.addEventListener("resize", () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight; });
+        function drawNebula() {
+            ctx.clearRect(0, 0, width, height);
+            const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 800);
+            gradient.addColorStop(0, "rgba(244, 117, 33, 0.06)");
+            gradient.addColorStop(0.5, "rgba(255, 158, 94, 0.02)");
+            gradient.addColorStop(1, "transparent");
+            ctx.fillStyle = gradient; ctx.fillRect(0, 0, width, height);
+            requestAnimationFrame(drawNebula);
+        }
+        drawNebula();
+
+        // Smooth Scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const targetPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                    const startPosition = window.pageYOffset;
+                    const distance = targetPosition - startPosition;
+                    const duration = 1200;
+                    let start = null;
+                    window.requestAnimationFrame(function step(timestamp) {
+                        if (!start) start = timestamp;
+                        const progress = timestamp - start;
+                        let percent = progress / duration;
+                        let easing = percent < 0.5 ? 8 * Math.pow(percent, 4) : 1 - Math.pow(-2 * percent + 2, 4) / 2;
+                        if (percent >= 1) easing = 1;
+                        window.scrollTo(0, startPosition + distance * easing);
+                        if (progress < duration) window.requestAnimationFrame(step);
+                        else window.scrollTo(0, targetPosition);
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
