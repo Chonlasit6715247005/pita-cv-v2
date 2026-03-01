@@ -11,7 +11,7 @@
         href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Orbitron:wght@500;700;900&display=swap"
         rel="stylesheet">
     <!-- Paho MQTT Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.1.0/paho-mqtt.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.min.js"></script>
 
     <style>
         :root {
@@ -503,7 +503,7 @@
         // Configurations
         const CONFIG = {
             host: "broker.hivemq.com",
-            port: 8884, // Secure WSS
+            port: 8884, // public secure WSS port
             baseTopic: "PITA_CV/ORACLE_RACE_001",
             maxProgress: 100, // Distance to finish line
             mashPower: 2.5,   // Distance gained per spacebar hit
@@ -582,6 +582,7 @@
                     client.subscribe(`${CONFIG.baseTopic}/Player/+`);
                 },
                 onFailure: (e) => {
+                    console.log("Connection failed: ", e);
                     setConnStatus("LINK FAILED", "var(--danger)");
                     setTimeout(initMQTT, 5000);
                 }
